@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "PWGameModeBase.generated.h"
+#include "PistolWhipGameModeBase.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PISTOLWHIP_API APWGameModeBase : public AGameModeBase
+class PISTOLWHIP_API APistolWhipGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
