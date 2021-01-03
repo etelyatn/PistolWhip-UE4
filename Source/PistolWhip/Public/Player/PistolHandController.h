@@ -21,6 +21,12 @@ public:
 	// Set Tracking Source hand
 	void SetHand(const EControllerHand InHand) const { MotionController->SetTrackingSource(InHand); }
 
+	// Equip a new weapon
+	void EquipWeapon(TSubclassOf<class APistolWeapon> WeaponClass);
+
+	// Start weapon fire
+	void Fire();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -28,5 +34,8 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	UMotionControllerComponent* MotionController;
+
+	UPROPERTY(Category=Weapon, VisibleInstanceOnly, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	APistolWeapon* Weapon;
 
 };

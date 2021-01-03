@@ -35,13 +35,14 @@ void APistolVRPawn::BeginPlay()
 
 	if (GetWorld())
 	{
-		// Spawn controllers
+		// Spawn controllers and weapons
 		LeftController = GetWorld()->SpawnActor<APistolHandController>();
 		if (LeftController)
 		{
 			LeftController->AttachToComponent(VRRoot, FAttachmentTransformRules::SnapToTargetIncludingScale);
 			LeftController->SetOwner(this);
 			LeftController->SetHand(EControllerHand::Left);
+			LeftController->EquipWeapon(WeaponClass);
 		}
 
 		RightController = GetWorld()->SpawnActor<APistolHandController>();
@@ -50,6 +51,7 @@ void APistolVRPawn::BeginPlay()
 			RightController->AttachToComponent(VRRoot, FAttachmentTransformRules::SnapToTargetIncludingScale);
 			RightController->SetOwner(this);
 			RightController->SetHand(EControllerHand::Right);
+			RightController->EquipWeapon(WeaponClass);
 		}
 	}
 }
