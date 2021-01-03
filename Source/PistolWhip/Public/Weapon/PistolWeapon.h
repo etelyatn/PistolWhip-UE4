@@ -18,8 +18,13 @@ public:
 	
 	virtual void StartFire();
 
+	void SetOwningPawn(APawn* NewOwner);
+
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY()
+	APawn* OwnerPawn;
 		
 	/** Enable debug mode */
 	UPROPERTY(Category=Weapon, EditAnywhere)
@@ -37,10 +42,10 @@ protected:
 
 	/** name of bone/socket for muzzle in weapon mesh */
 	UPROPERTY(Category=Weapon, EditDefaultsOnly)
-	FName MuzzleAttachPoint;
+	FName MuzzleName = FName("Muzzle");
 
 	/** fire animation */
-	UPROPERTY(EditDefaultsOnly, Category=Animation)
+	UPROPERTY(Category=Animation, EditDefaultsOnly)
 	UAnimationAsset* FireAnim;
 
 #if WITH_EDITORONLY_DATA
@@ -48,8 +53,22 @@ protected:
 	UPROPERTY()
 	class UArrowComponent* ArrowComponent;
 #endif
+
+	virtual bool CanFire() const;
 	
 	/** play weapon animations */
 	void PlayWeaponAnimation(UAnimationAsset* Animation);
+
+	/** find hit */
+	FHitResult WeaponTrace(const FVector& TraceFrom, const FVector& TraceTo) const;
+
+	/** weapon specific fire implementation */
+	virtual void FireWeapon() PURE_VIRTUAL(APistolWeapon::FireWeapon,);
+
+	/** get the muzzle location of the weapon */
+	FVector GetMuzzleLocation() const;
+
+	/** get direction of weapon's muzzle */
+	FVector GetMuzzleDirection() const;
 
 };

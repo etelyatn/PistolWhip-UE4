@@ -27,8 +27,14 @@ public:
 	// Start weapon fire
 	void Fire();
 
+	UFUNCTION(BlueprintCallable)
+	void SetOwningPawn(APawn* NewOwner);
+
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY()
+	APawn* OwnerPawn;
 
 private:
 

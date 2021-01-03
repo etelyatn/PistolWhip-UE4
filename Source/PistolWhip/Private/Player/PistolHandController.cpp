@@ -21,7 +21,7 @@ void APistolHandController::EquipWeapon(TSubclassOf<APistolWeapon> WeaponClass)
 		if (Weapon)
 		{
 			Weapon->AttachToComponent(MotionController, FAttachmentTransformRules::SnapToTargetIncludingScale);
-			Weapon->SetOwner(this);
+			Weapon->SetOwningPawn(OwnerPawn);
 		}
 	}
 }
@@ -32,6 +32,12 @@ void APistolHandController::Fire()
 	{
 		Weapon->StartFire();
 	}
+}
+
+void APistolHandController::SetOwningPawn(APawn* NewOwner)
+{
+	SetOwner(NewOwner);
+	OwnerPawn = NewOwner;
 }
 
 void APistolHandController::BeginPlay()
