@@ -8,18 +8,23 @@
 #include "Engine/CollisionProfile.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "MotionControllerComponent.h"
+#include "Gameplay/PistolSplineTrack.h"
+#include "Kismet/GameplayStatics.h"
 
 APistolVRPawn::APistolVRPawn()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
-	CapsuleComponent->InitCapsuleSize(12.0f, 12.0f);
-	CapsuleComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
-	RootComponent = CapsuleComponent;
+	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRoot"));
+	SetRootComponent(SceneRoot);
 
 	VRRoot = CreateDefaultSubobject<USceneComponent>(TEXT("VRRoot"));
 	VRRoot->SetupAttachment(RootComponent);
+
+	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
+	CapsuleComponent->InitCapsuleSize(12.0f, 12.0f);
+	CapsuleComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
+	CapsuleComponent->SetupAttachment(VRRoot);
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(VRRoot);
@@ -54,6 +59,17 @@ void APistolVRPawn::BeginPlay()
 			LeftController->SetOwningPawn(this);
 			RightController->EquipWeapon(WeaponClass);
 		}
+
+		// Set Spline Track
+		if (bMoveBySplineTrack)
+		{
+			TArray<AActor*> FoundActors;
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), APistolSplineTrack::StaticClass(), FoundActors);
+			if (FoundActors.Num() > 0)
+			{
+				SplineTrack = Cast<APistolSplineTrack>(FoundActors[0]);
+			}
+		}
 	}
 }
 
@@ -61,15 +77,24 @@ void APistolVRPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Fix root position to the camera
-	const FVector NewCameraOffset = Camera->GetComponentLocation() - GetActorLocation();
-	AddActorWorldOffset(NewCameraOffset);
-	VRRoot->AddWorldOffset(-NewCameraOffset);
+	if (bMoveBySplineTrack && SplineTrack)
+	{
+		MoveBySplineTrack();
+	}
+
+	CapsuleComponent->SetRelativeLocation(Camera->GetRelativeLocation());
 }
 
-void APistolVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void APistolVRPawn::MoveBySplineTrack()
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	if (!SplineTrack || !SplineTrack->GetSpline())
+	{
+		return;
+	}
 
+	TrackDistance = GetWorld()->GetDeltaSeconds() + UGameplayStatics::GetTimeSeconds(GetWorld()) * SplineTrackSpeed;
+	FVector NewActorLocation = SplineTrack->GetSpline()->GetWorldLocationAtDistanceAlongSpline(TrackDistance);
+	NewActorLocation.Z = GetActorLocation().Z;
+	SetActorLocation(NewActorLocation);
 }
 

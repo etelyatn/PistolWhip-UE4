@@ -18,7 +18,7 @@ protected:
 	
 	/** range of instant weapon */
 	UPROPERTY(Category=WeaponStat, EditDefaultsOnly)
-	float WeaponRange = 1000.0f;
+	float WeaponRange = 10000.0f;
 
 	/** damage amount */
 	UPROPERTY(Category=WeaponStat, EditDefaultsOnly)
