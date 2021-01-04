@@ -5,6 +5,7 @@
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
 #include "DrawDebugHelpers.h"
+#include "PistolWhipTypes.h"
 
 APistolWeapon::APistolWeapon()
 {
@@ -57,7 +58,7 @@ FHitResult APistolWeapon::WeaponTrace(const FVector& TraceFrom, const FVector& T
 	TraceParams.bDebugQuery = true;
 
 	FHitResult Hit(ForceInit);
-	GetWorld()->LineTraceSingleByChannel(Hit, TraceFrom, TraceTo, ECC_Visibility, TraceParams);
+	GetWorld()->LineTraceSingleByChannel(Hit, TraceFrom, TraceTo, COLLISION_WEAPON_TRACE, TraceParams);
 
 #if !UE_BUILD_SHIPPING
 	// Draw debug line

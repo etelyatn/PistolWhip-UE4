@@ -15,9 +15,11 @@ public:
 	APistolWeapon();
 
 	virtual void Tick(float DeltaTime) override;
-	
+
+	UFUNCTION(BlueprintCallable)
 	virtual void StartFire();
 
+	UFUNCTION(BlueprintCallable)
 	void SetOwningPawn(APawn* NewOwner);
 
 protected:

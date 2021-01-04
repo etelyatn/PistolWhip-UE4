@@ -2,7 +2,7 @@
 
 
 #include "Weapon/PistolWeapon_Instant.h"
-
+#include "Enemy/PistolEnemyPawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 
@@ -46,8 +46,12 @@ void APistolWeapon_Instant::DealDamage(const FHitResult& Impact, const FVector& 
 	if (IsValid(OwnerPawn) && IsValid(OwnerPawn->GetController()))
 	{
 		Impact.GetActor()->TakeDamage(PointDmg.Damage, PointDmg, OwnerPawn->GetController(), OwnerPawn);
-
-		if (Impact.Component.IsValid() && Impact.Component->IsSimulatingPhysics())
+		
+		APistolEnemyPawn* EnemyPawn = Cast<APistolEnemyPawn>(Impact.GetActor());
+		if (EnemyPawn)
+		{
+			EnemyPawn->GetMesh()->AddImpulse(ShootDir * HitMagnitude, Impact.BoneName);
+		} else if (Impact.Component.IsValid() && Impact.Component->IsSimulatingPhysics())
 		{
 			Impact.Component->AddImpulseAtLocation(ShootDir * HitMagnitude, Impact.ImpactPoint);
 		}
