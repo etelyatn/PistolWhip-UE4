@@ -15,10 +15,6 @@ class PISTOLWHIP_API APistolWeapon_Instant : public APistolWeapon
 	GENERATED_BODY()
 
 protected:
-	
-	/** range of instant weapon */
-	UPROPERTY(Category=WeaponStat, EditDefaultsOnly)
-	float WeaponRange = 10000.0f;
 
 	/** damage amount */
 	UPROPERTY(Category=WeaponStat, EditDefaultsOnly)

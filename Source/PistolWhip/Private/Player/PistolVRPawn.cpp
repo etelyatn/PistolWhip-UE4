@@ -56,7 +56,7 @@ void APistolVRPawn::BeginPlay()
 		{
 			RightController->AttachToComponent(VRRoot, FAttachmentTransformRules::SnapToTargetIncludingScale);
 			RightController->SetHand(EControllerHand::Right);
-			LeftController->SetOwningPawn(this);
+			RightController->SetOwningPawn(this);
 			RightController->EquipWeapon(WeaponClass);
 		}
 

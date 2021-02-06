@@ -50,6 +50,10 @@ protected:
 	UPROPERTY(Category=Animation, EditDefaultsOnly)
 	UAnimationAsset* FireAnim;
 
+	/** range of instant weapon */
+	UPROPERTY(Category=WeaponStat, EditDefaultsOnly)
+	float WeaponRange = 10000.0f;
+
 #if WITH_EDITORONLY_DATA
 	/** Component shown in the editor only to indicate weapon facing */
 	UPROPERTY()
