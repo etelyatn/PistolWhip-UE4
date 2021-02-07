@@ -6,7 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Player/PistolVRPawn.h"
+#include "Player/PistolPlayerPawn.h"
 #include "Enemy/PistolEnemyPawn.h"
 
 // Sets default values
@@ -31,7 +31,7 @@ void APistolEnemySpawner::Spawn()
 {
 	if (GetWorld() && IsValid(EnemyPawnClass))
 	{
-		APistolVRPawn* PlayerPawn = Cast<APistolVRPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+		APistolPlayerPawn* PlayerPawn = Cast<APistolPlayerPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 
 		if (PlayerPawn)
 		{

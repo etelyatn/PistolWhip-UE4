@@ -3,19 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
+
+#include "PistolPlayerPawn.h"
 #include "Weapon/PistolWeapon.h"
-#include "PistolVRPawn.generated.h"
+#include "PistolPlayerPawn_VR.generated.h"
 
 class APistolHandController;
 
-UCLASS()
-class PISTOLWHIP_API APistolVRPawn : public APawn
+UCLASS(Abstract)
+class PISTOLWHIP_API APistolPlayerPawn_VR : public APistolPlayerPawn
 {
 	GENERATED_BODY()
 
 public:
-	APistolVRPawn();
+	APistolPlayerPawn_VR();
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -24,20 +25,8 @@ public:
 	APistolHandController* GetRightController() const { return RightController; };
 	
 protected:
-	/** spline track for pawn movement */
-	UPROPERTY(BlueprintReadWrite)
-	class APistolSplineTrack* SplineTrack;
-
-	UPROPERTY(Category=Config, EditDefaultsOnly)
-	bool bMoveBySplineTrack = true;
-
-	/** Pawn movement speed along Spline track */
-	UPROPERTY(Category=Config, EditDefaultsOnly, BlueprintReadWrite)
-	float SplineTrackSpeed = 200.0f;
 
 	virtual void BeginPlay() override;
-
-	void MoveBySplineTrack();
 	
 private:
 
@@ -48,7 +37,7 @@ private:
 	USceneComponent* SceneRoot;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
-	class UCapsuleComponent* CapsuleComponent;
+	class UCapsuleComponent* HeadCapsule;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	class UCameraComponent* Camera;
@@ -62,6 +51,4 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	APistolHandController* RightController;
 
-	/** Distance along the spline track */
-	float TrackDistance = 0.0f;
 };

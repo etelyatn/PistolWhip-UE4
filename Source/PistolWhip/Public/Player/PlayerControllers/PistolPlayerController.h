@@ -3,27 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
 #include "GameFramework/PlayerController.h"
 #include "PistolPlayerController.generated.h"
 
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class PISTOLWHIP_API APistolPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 public:
 	virtual void SetPawn(APawn* InPawn) override;
 
-protected:
-	virtual void SetupInputComponent() override;
-
 private:
-	TSoftObjectPtr<class APistolVRPawn> CachedPawn;
-
-	void OnTriggerLeft();
-	void OnTriggerRight();
-	
+	TWeakObjectPtr<class APistolPlayerPawn> CachedPawn;	
 };
