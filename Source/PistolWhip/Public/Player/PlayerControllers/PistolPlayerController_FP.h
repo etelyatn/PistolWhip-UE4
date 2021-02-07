@@ -7,6 +7,8 @@
 #include "Player/PistolPlayerPawn_FP.h"
 #include "PistolPlayerController_FP.generated.h"
 
+class APistolPlayerPawn_FP;
+
 /**
  * 
  */
@@ -20,8 +22,33 @@ public:
 
 protected:
 
+	TWeakObjectPtr<APistolPlayerPawn_FP> CachedPawnFP;
+
+	/** Movement speed for body control */
+	UPROPERTY(Category=PistolPlayerFP, EditDefaultsOnly)
+	float ControlMovementSpeed = 700.0f;
+
+	/** Max Control Deviation for player Right movement */
+	UPROPERTY(Category=PistolPlayerFP, EditDefaultsOnly)
+	float MaxRightDeviation = 100.f;
+
+	/** Min Control Deviation for player Up movement */
+	UPROPERTY(Category=PistolPlayerFP, EditDefaultsOnly)
+	float MaxUpDeviation = 90.f;
+
+	/** Min Control Deviation for player Up movement */
+	UPROPERTY(Category=PistolPlayerFP, EditDefaultsOnly)
+	float MinUpDeviation = -10.f;
+
 	virtual void SetupInputComponent() override;
 
-	TWeakObjectPtr<class APistolPlayerPawn_FP> CachedPawnFP;
+private:
+
+	/** On Fire press action */
+	void OnFire();
+
+	/** Body movement actions */
+	void OnMoveUp(const float Val);
+	void OnMoveRight(float Val);	
 	
 };

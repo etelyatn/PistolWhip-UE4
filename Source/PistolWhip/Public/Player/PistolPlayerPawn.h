@@ -8,6 +8,7 @@
 
 class UCapsuleComponent;
 class UArrowComponent;
+class UCameraComponent;
 
 UCLASS(Abstract)
 class PISTOLWHIP_API APistolPlayerPawn : public APawn
@@ -18,15 +19,34 @@ public:
 	/** Sets default values for this pawn's properties */
 	APistolPlayerPawn();
 
+	/** Returns Camera subobject */
+	FORCEINLINE UCameraComponent* GetCamera() const { return Camera; }
+
 protected:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	/** The CapsuleComponent being used for movement collision. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UCapsuleComponent* CapsuleComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class UCapsuleComponent* HeadCapsule;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class UCameraComponent* Camera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class USceneComponent* BodyRoot;
+
 	/** spline track for pawn movement */
 	UPROPERTY(BlueprintReadWrite)
 	class APistolSplineTrack* SplineTrack;
+
+	UPROPERTY(Category=PistolPlayer, EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	TSubclassOf<class APistolWeapon> WeaponClass;
 
 	/** should a pawn move along a spline track */
 	UPROPERTY(Category=PistolPlayer, EditDefaultsOnly)
@@ -39,19 +59,15 @@ protected:
 	/** Distance along the spline track */
 	float TrackDistance = 0.0f;
 
-	/** Pawn movement along a spline track */
-	void MoveBySplineTrack();
 
-private:
-
-	/** The CapsuleComponent being used for movement collision. */
-	UPROPERTY(Category=Character, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
-	UCapsuleComponent* CapsuleComponent;
 
 #if WITH_EDITORONLY_DATA
 	/** Component shown in the editor only to indicate character facing */
 	UPROPERTY()
 	UArrowComponent* ArrowComponent;
 #endif
+	
+	/** Pawn movement along a spline track */
+	void MoveBySplineTrack();
 
 };

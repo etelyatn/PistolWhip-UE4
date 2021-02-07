@@ -1,7 +1,7 @@
 // 2021 github.com/EugeneTel/PistolWhip-UE4
 
 #include "Player/PistolPlayerPawn.h"
-
+#include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
 #include "COmponents/CapsuleComponent.h"
 #include "Engine/CollisionProfile.h"
@@ -13,9 +13,20 @@ APistolPlayerPawn::APistolPlayerPawn()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(FName("CapsuleComponent"));
-	CapsuleComponent->InitCapsuleSize(34.0f, 88.0f);
+	CapsuleComponent->InitCapsuleSize(34.0f, 90.0f);
 	CapsuleComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
 	RootComponent = CapsuleComponent;
+
+	BodyRoot = CreateDefaultSubobject<USceneComponent>(TEXT("BodyRoot"));
+	BodyRoot->SetupAttachment(CapsuleComponent);
+
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	Camera->SetupAttachment(BodyRoot);
+
+	HeadCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("HeadCapsule"));
+	HeadCapsule->InitCapsuleSize(12.0f, 12.0f);
+	HeadCapsule->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
+	HeadCapsule->SetupAttachment(Camera);
 
 #if WITH_EDITORONLY_DATA
 	ArrowComponent = CreateEditorOnlyDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
@@ -33,9 +44,6 @@ void APistolPlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Calculate track distance
-	TrackDistance = GetWorld()->GetDeltaSeconds() + UGameplayStatics::GetTimeSeconds(GetWorld()) * SplineTrackSpeed;
-
 	// Set Spline Track
 	if (bMoveBySplineTrack)
 	{
@@ -46,7 +54,6 @@ void APistolPlayerPawn::BeginPlay()
 			SplineTrack = Cast<APistolSplineTrack>(FoundActors[0]);
 		}
 	}
-	
 }
 
 void APistolPlayerPawn::Tick(float DeltaSeconds)
@@ -70,6 +77,9 @@ void APistolPlayerPawn::MoveBySplineTrack()
 	{
 		return;
 	}
+
+	// Calculate track distance
+	TrackDistance = GetWorld()->GetDeltaSeconds() + UGameplayStatics::GetTimeSeconds(GetWorld()) * SplineTrackSpeed;
 
 	FVector NewActorLocation = SplineTrack->GetSpline()->GetWorldLocationAtDistanceAlongSpline(TrackDistance);
 	NewActorLocation.Z = GetActorLocation().Z;

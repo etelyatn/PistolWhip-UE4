@@ -8,6 +8,8 @@
 #include "GameFramework/Actor.h"
 #include "PistolHandController.generated.h"
 
+class APistolWeapon;
+
 UCLASS()
 class PISTOLWHIP_API APistolHandController : public AActor
 {
@@ -21,8 +23,11 @@ public:
 	// Set Tracking Source hand
 	void SetHand(const EControllerHand InHand) const { MotionController->SetTrackingSource(InHand); }
 
+	/** Get weapon instance */
+	APistolWeapon* GetWeapon() const { return Weapon; }
+
 	// Equip a new weapon
-	void EquipWeapon(TSubclassOf<class APistolWeapon> WeaponClass);
+	void EquipWeapon(TSubclassOf<APistolWeapon> WeaponClass);
 
 	// Start weapon fire
 	void Fire();

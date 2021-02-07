@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 
 #include "PistolPlayerPawn.h"
-#include "Weapon/PistolWeapon.h"
 #include "PistolPlayerPawn_VR.generated.h"
 
 class APistolHandController;
@@ -29,21 +28,6 @@ protected:
 	virtual void BeginPlay() override;
 	
 private:
-
-	UPROPERTY(Category=Weapon, EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
-	TSubclassOf<APistolWeapon> WeaponClass;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
-	USceneComponent* SceneRoot;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
-	class UCapsuleComponent* HeadCapsule;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
-	class UCameraComponent* Camera;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
-	class USceneComponent* VRRoot;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	APistolHandController* LeftController;
