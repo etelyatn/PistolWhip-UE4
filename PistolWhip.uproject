@@ -224,6 +224,11 @@
 		{
 			"Name": "XGEController",
 			"Enabled": false
+		},
+		{
+			"Name": "Debug",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/739ccab666f245e08397bcbf668063ed"
 		}
 	]
 }

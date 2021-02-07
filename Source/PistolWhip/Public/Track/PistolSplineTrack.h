@@ -19,7 +19,23 @@ public:
 	UFUNCTION(BlueprintCallable)
 	USplineComponent* GetSpline() const { return Spline; };
 
+	/** for DrawLines() only */
+	virtual bool ShouldTickIfViewportsOnly() const override;
+
+	virtual void BeginPlay() override;
+
+#if WITH_EDITOR
+	/** Draw debug lines between Track Points and Enemy Spawners */
+	void DrawLines() const;
+#endif
+
+	virtual void Tick(float DeltaSeconds) override;
+	
 private:
+
+	/** Should draw debug lines */
+	UPROPERTY(EditAnywhere)
+	bool bDrawLines = true; 
 
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* SceneRoot;

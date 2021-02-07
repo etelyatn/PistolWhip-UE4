@@ -8,7 +8,7 @@
 #include "Engine/CollisionProfile.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "MotionControllerComponent.h"
-#include "Gameplay/PistolSplineTrack.h"
+#include "Track/PistolSplineTrack.h"
 #include "Kismet/GameplayStatics.h"
 
 APistolVRPawn::APistolVRPawn()
