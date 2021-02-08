@@ -1,9 +1,9 @@
 // 2021 github.com/EugeneTel/PistolWhip-UE4
 
 
-#include "Track/PistolSplineTrack.h"
+#include "Gameplay/PistolSplineTrack.h"
 #include "Components/SplineComponent.h"
-#include "Track/PistolTrackPointComponent.h"
+#include "Gameplay/PistolTrackPointComponent.h"
 #include "Log.h"
 
 APistolSplineTrack::APistolSplineTrack()

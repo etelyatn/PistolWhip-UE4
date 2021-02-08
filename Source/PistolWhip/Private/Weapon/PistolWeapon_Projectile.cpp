@@ -3,6 +3,7 @@
 
 #include "Weapon/PistolWeapon_Projectile.h"
 
+#include "Log.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Weapon/PistolProjectile.h"
@@ -11,13 +12,14 @@ void APistolWeapon_Projectile::FireWeapon()
 {
 	const FVector ProjectileStart = GetMuzzleLocation();
 
-	const FVector ProjectileGoal = GetProjectileGoal();
+	const FVector ProjectileGoal = GetGoalLocation().IsZero() ? CalculateProjectileGoal() : GetGoalLocation();
+	ULog::Vector(GetGoalLocation(), true, "Loc: ");
 	const FRotator ProjectileDir = UKismetMathLibrary::FindLookAtRotation(ProjectileStart, ProjectileGoal);
 	
 	FireProjectile(ProjectileStart, ProjectileDir);
 }
 
-FVector APistolWeapon_Projectile::GetProjectileGoal()
+FVector APistolWeapon_Projectile::CalculateProjectileGoal()
 {
 	const FVector StartTrace = GetMuzzleLocation();
 	const FVector ShootDir = GetMuzzleDirection();

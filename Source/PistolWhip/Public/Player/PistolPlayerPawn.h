@@ -25,6 +25,12 @@ public:
 
 	FORCEINLINE EGameModeType GetGameModeType() const { return GameModeType; }
 
+	/** Get current head location */
+	FVector GetHeadLocation() const;
+
+	/** Get current movement speed along the spline track */
+	float GetMovementSpeed() const;
+
 protected:
 
 	virtual void BeginPlay() override;

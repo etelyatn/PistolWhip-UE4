@@ -37,7 +37,7 @@ protected:
 	virtual void FireWeapon() override;
 
 	/** calculate projectile goal */
-	virtual FVector GetProjectileGoal();
+	virtual FVector CalculateProjectileGoal();
 
 	void FireProjectile(FVector Origin, FRotator ProjectileDir);
 	

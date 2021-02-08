@@ -3,7 +3,7 @@
 
 #include "Enemy/PistolEnemyPawn.h"
 
-
+#include "Log.h"
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/CollisionProfile.h"
@@ -62,11 +62,13 @@ float APistolEnemyPawn::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 void APistolEnemyPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	EquipWeapon();
 }
 
 void APistolEnemyPawn::Death()
 {
+	bAlive = false;
 	Mesh->SetCollisionProfileName(FName("Ragdoll"));
 	Mesh->SetSimulatePhysics(true);
 
@@ -75,6 +77,29 @@ void APistolEnemyPawn::Death()
 
 void APistolEnemyPawn::DestroyEnemy()
 {
+	if (Weapon)
+	{
+		Weapon->Destroy();
+	}
 	Destroy();
 }
 
+void APistolEnemyPawn::EquipWeapon()
+{
+	if (GetWorld() && WeaponClass)
+	{
+		Weapon = GetWorld()->SpawnActor<APistolWeapon>(WeaponClass);
+		if (Weapon)
+		{
+			Weapon->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocketName);
+			Weapon->SetOwningPawn(this);			
+			Weapon->SetActorRelativeLocation(FVector(0.0f, 2.0f, 3.0f));
+			Weapon->SetActorRelativeRotation(FRotator(30.0f, -180.0f, 2.0f));
+		}
+	}
+}
+
+bool APistolEnemyPawn::IsAlive() const
+{
+	return bAlive;
+}

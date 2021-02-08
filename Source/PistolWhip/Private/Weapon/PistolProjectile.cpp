@@ -18,8 +18,8 @@ APistolProjectile::APistolProjectile()
 
 	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("MovementComponent"));
 	MovementComponent->UpdatedComponent = CollisionComponent;
-	MovementComponent->InitialSpeed = 200.0f;
-	MovementComponent->MaxSpeed = 200.0f;
+	MovementComponent->InitialSpeed = 400.0f;
+	MovementComponent->MaxSpeed = 400.0f;
 	MovementComponent->bRotationFollowsVelocity = true;
 	MovementComponent->ProjectileGravityScale = 0.f;
 

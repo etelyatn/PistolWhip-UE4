@@ -1,9 +1,9 @@
 // 2021 github.com/EugeneTel/PistolWhip-UE4
 
-#include "Track/PistolTrackPointComponent.h"
+#include "Gameplay/PistolTrackPointComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Log.h"
-#include "Gameplay/PistolEnemySpawner.h"
+#include "Enemy/PistolEnemySpawner.h"
 #include "Player/PistolPlayerPawn.h"
 
 UPistolTrackPointComponent::UPistolTrackPointComponent()

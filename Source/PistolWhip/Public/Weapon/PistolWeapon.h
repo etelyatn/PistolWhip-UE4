@@ -22,6 +22,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetOwningPawn(APawn* NewOwner);
 
+	/** Predefined shooting Goal location */
+	FORCEINLINE void SetGoalLocation(const FVector InLocation) { GoalLocation = InLocation; }
+	FORCEINLINE FVector GetGoalLocation() const { return GoalLocation; }
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -82,5 +86,9 @@ protected:
 
 	/** Get the aim of the weapon, allowing for adjustments to be made by the weapon */
 	virtual FVector GetAdjustedAim() const;
+
+private:
+	/** Goal location for shooting */
+	FVector GoalLocation;
 
 };

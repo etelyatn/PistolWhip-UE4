@@ -1,6 +1,6 @@
 // 2021 github.com/EugeneTel/PistolWhip-UE4
 
-#include "Gameplay/PistolEnemySpawner.h"
+#include "Enemy//PistolEnemySpawner.h"
 
 #include "Log.h"
 #include "Components/BillboardComponent.h"
@@ -35,16 +35,9 @@ void APistolEnemySpawner::Spawn()
 {
 	if (GetWorld() && IsValid(EnemyPawnClass))
 	{
-		APistolPlayerPawn* PlayerPawn = Cast<APistolPlayerPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-
-		if (PlayerPawn)
-		{
-			const FRotator EnemyRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerPawn->GetActorLocation());
-
-			APistolEnemyPawn* NewEnemy = GetWorld()->SpawnActor<APistolEnemyPawn>(EnemyPawnClass, GetActorLocation(), EnemyRotation);
-		}
+		const FRotator EnemyRotation = FRotator::ZeroRotator;
+		APistolEnemyPawn* NewEnemy = GetWorld()->SpawnActor<APistolEnemyPawn>(EnemyPawnClass, GetActorLocation(), EnemyRotation);
 	}
-
 }
 
 void APistolEnemySpawner::Activate_Implementation()

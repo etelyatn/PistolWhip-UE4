@@ -32,6 +32,8 @@ APistolWeapon::APistolWeapon()
 		ArrowComponent->bIsScreenSizeScaled = true;
 	}
 #endif
+
+	GoalLocation = FVector::ZeroVector;
 }
 
 void APistolWeapon::BeginPlay()

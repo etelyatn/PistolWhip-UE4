@@ -6,7 +6,7 @@
 #include "COmponents/CapsuleComponent.h"
 #include "Engine/CollisionProfile.h"
 #include "Kismet/GameplayStatics.h"
-#include "Track/PistolSplineTrack.h"
+#include "Gameplay/PistolSplineTrack.h"
 
 APistolPlayerPawn::APistolPlayerPawn()
 {
@@ -38,6 +38,16 @@ APistolPlayerPawn::APistolPlayerPawn()
 		ArrowComponent->bIsScreenSizeScaled = true;
 	}
 #endif // WITH_EDITORONLY_DATA
+}
+
+FVector APistolPlayerPawn::GetHeadLocation() const
+{
+	return HeadCapsule->GetComponentLocation();
+}
+
+float APistolPlayerPawn::GetMovementSpeed() const
+{
+	return bMoveBySplineTrack ? SplineTrackSpeed : 0.0f;
 }
 
 void APistolPlayerPawn::BeginPlay()
