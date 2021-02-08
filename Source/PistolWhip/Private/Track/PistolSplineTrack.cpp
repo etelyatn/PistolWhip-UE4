@@ -42,7 +42,7 @@ void APistolSplineTrack::DrawLines() const
 	{
 		if (IsValid(TrackPoint))
 		{
-			TrackPoint->DrawSpawnerLines();
+			TrackPoint->DrawLinesToItems();
 		}
 	}
 }

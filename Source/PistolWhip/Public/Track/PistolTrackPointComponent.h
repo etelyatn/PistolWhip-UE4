@@ -17,15 +17,22 @@ class PISTOLWHIP_API UPistolTrackPointComponent : public UBoxComponent
 public:
 	
 	UPistolTrackPointComponent();
+	virtual void BeginPlay() override;
 
-	/** List of Enemy Spawners for activation */
+	/** List of Items for activation */
 	UPROPERTY(Category=TrackPoint, EditInstanceOnly)
-	TArray<class APistolEnemySpawner*> Spawners;
+	TArray<TScriptInterface<class IPistolActivatableInterface>> Items;
+
+	/** Activate Items by interface */
+	void ActivateItems();
 
 #if WITH_EDITOR
-	/** Draw debug lines to Spawners */
-	void DrawSpawnerLines();
+	/** Draw debug lines to Items */
+	void DrawLinesToItems();
 #endif
 
-	
+
+protected:
+	UFUNCTION()
+	void OnTrackPointBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

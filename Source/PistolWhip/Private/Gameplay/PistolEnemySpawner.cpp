@@ -2,6 +2,7 @@
 
 #include "Gameplay/PistolEnemySpawner.h"
 
+#include "Log.h"
 #include "Components/BillboardComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -20,9 +21,12 @@ APistolEnemySpawner::APistolEnemySpawner()
 	Capsule->SetupAttachment(GetRootComponent());
 	Capsule->SetCapsuleHalfHeight(92.0);
 	Capsule->SetCapsuleRadius(30.f);
-	Capsule->SetRelativeLocation(FVector(0.0f, 0.0f, 92.0f));
 	Capsule->ShapeColor = FColor::Red;
 	Capsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	static FName CollisionProfileName(TEXT("NoCollision"));
+	Capsule->SetCollisionProfileName(CollisionProfileName);
+	Capsule->SetGenerateOverlapEvents(false);
+	
 #endif
 
 }
@@ -41,4 +45,9 @@ void APistolEnemySpawner::Spawn()
 		}
 	}
 
+}
+
+void APistolEnemySpawner::Activate_Implementation()
+{
+	Spawn();
 }

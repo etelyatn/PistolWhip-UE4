@@ -4,12 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Interfaces/PistolActivatableInterface.h"
+
 #include "PistolEnemySpawner.generated.h"
 
 class APistolEnemyPawn;
 
 UCLASS()
-class PISTOLWHIP_API APistolEnemySpawner : public AActor
+class PISTOLWHIP_API APistolEnemySpawner : public AActor, public IPistolActivatableInterface
 {
 	GENERATED_BODY()
 	
@@ -20,17 +22,17 @@ public:
 	/** Spawn a specified Enemy */
 	void Spawn();
 
-protected:
+	/** PistolActivatableInterface */
+	virtual void Activate_Implementation() override;
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly)
-	class UPistolTrackPointComponent* TrackPoint;
+protected:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<APistolEnemyPawn> EnemyPawnClass;
 
 #if WITH_EDITOR
-	
-	UPROPERTY()
+	/** Capsule for spawner visualization */
+	UPROPERTY(VisibleAnywhere)
 	class UCapsuleComponent* Capsule;
 #endif
 
