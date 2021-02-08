@@ -38,6 +38,12 @@ void APistolProjectile::PostInitializeComponents()
 	CachedController = GetInstigatorController();
 }
 
+void APistolProjectile::InitProjectileSpeed(const float InSpeed) const
+{
+	MovementComponent->MaxSpeed = InSpeed;
+	MovementComponent->InitialSpeed = InSpeed;
+}
+
 void APistolProjectile::InitVelocity(FVector& ShootDirection)
 {
 	if (IsValid(MovementComponent))

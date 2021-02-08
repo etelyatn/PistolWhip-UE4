@@ -21,10 +21,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetOwningPawn(APawn* NewOwner);
+	
+	/** get the muzzle location of the weapon */
+	FVector GetMuzzleLocation() const;
 
-	/** Predefined shooting Goal location */
-	FORCEINLINE void SetGoalLocation(const FVector InLocation) { GoalLocation = InLocation; }
-	FORCEINLINE FVector GetGoalLocation() const { return GoalLocation; }
+	/** get direction of weapon's muzzle */
+	FVector GetMuzzleDirection() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -75,20 +77,10 @@ protected:
 	/** weapon specific fire implementation */
 	virtual void FireWeapon() PURE_VIRTUAL(APistolWeapon::FireWeapon,);
 
-	/** get the muzzle location of the weapon */
-	FVector GetMuzzleLocation() const;
-
-	/** get direction of weapon's muzzle */
-	FVector GetMuzzleDirection() const;
-
 	/** get the originating location for damage */
 	FVector GetDamageStartLocation() const;
 
 	/** Get the aim of the weapon, allowing for adjustments to be made by the weapon */
 	virtual FVector GetAdjustedAim() const;
-
-private:
-	/** Goal location for shooting */
-	FVector GoalLocation;
 
 };

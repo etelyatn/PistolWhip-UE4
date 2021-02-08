@@ -20,6 +20,9 @@ public:
 	/** initial setup */
 	virtual void PostInitializeComponents() override;
 
+	/** setup movement speed */
+	void InitProjectileSpeed(const float InSpeed) const;
+
 	/** setup velocity */
 	void InitVelocity(FVector& ShootDirection);
 

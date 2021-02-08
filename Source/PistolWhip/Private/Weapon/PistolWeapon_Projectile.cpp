@@ -8,6 +8,26 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Weapon/PistolProjectile.h"
 
+APistolWeapon_Projectile::APistolWeapon_Projectile()
+{
+	GoalLocation = FVector::ZeroVector;
+}
+
+float APistolWeapon_Projectile::GetProjectileSpeed() const
+{
+	return ProjectileConfig.ProjectileSpeed;
+}
+
+void APistolWeapon_Projectile::SetProjectileSpeed(const float InSpeed)
+{
+	ProjectileConfig.ProjectileSpeed = InSpeed;
+}
+
+float APistolWeapon_Projectile::GetGoalReachTime() const
+{
+	return ProjectileConfig.GoalReachTime;
+}
+
 void APistolWeapon_Projectile::FireWeapon()
 {
 	const FVector ProjectileStart = GetMuzzleLocation();
@@ -35,13 +55,18 @@ FVector APistolWeapon_Projectile::CalculateProjectileGoal()
 
 void APistolWeapon_Projectile::FireProjectile(const FVector Origin, const FRotator ProjectileDir)
 {
-	const FTransform SpawnTransform(ProjectileDir, Origin);
-	APistolProjectile* Projectile = Cast<APistolProjectile>(UGameplayStatics::BeginDeferredActorSpawnFromClass(this, ProjectileConfig.ProjectileClass, SpawnTransform));
-	if (Projectile)
+	if (ProjectileConfig.ProjectileClass)
 	{
-		Projectile->SetInstigator(GetInstigator());
-		Projectile->SetOwner(this);
+		const FTransform SpawnTransform(ProjectileDir, Origin);
+		APistolProjectile* Projectile = Cast<APistolProjectile>(UGameplayStatics::BeginDeferredActorSpawnFromClass(this, ProjectileConfig.ProjectileClass, SpawnTransform));
+		if (Projectile)
+		{
+			Projectile->SetInstigator(GetInstigator());
+			Projectile->SetOwner(this);
+			Projectile->InitProjectileSpeed(ProjectileConfig.ProjectileSpeed);
+			// Projectile->InitVelocity()
 
-		UGameplayStatics::FinishSpawningActor(Projectile, SpawnTransform);
+			UGameplayStatics::FinishSpawningActor(Projectile, SpawnTransform);
+		}
 	}
 }

@@ -18,6 +18,14 @@ struct FProjectileWeaponData
 	/** life time */
 	UPROPERTY(Category=Projectile, EditDefaultsOnly)
 	float ProjectileLife = 10.0f;
+
+	/** projectile movement speed */
+	UPROPERTY(Category=Projectile, VisibleInstanceOnly)
+	float ProjectileSpeed = 0.0f;
+
+	/** how much time needed for the projectile to reach the goal */ 
+	UPROPERTY(Category=Projectile, EditDefaultsOnly)
+	float GoalReachTime = 2.0f;
 };
 
 /**
@@ -27,6 +35,20 @@ UCLASS(Abstract, Blueprintable)
 class PISTOLWHIP_API APistolWeapon_Projectile : public APistolWeapon
 {
 	GENERATED_BODY()
+public:
+
+	APistolWeapon_Projectile();
+
+	/** Get Projectile Movement speed for weapon */
+	float GetProjectileSpeed() const;
+	void SetProjectileSpeed(float InSpeed);
+
+	/** Get Projectile goal reach time */
+	float GetGoalReachTime() const;
+	
+	/** Predefined shooting Goal location */
+	FORCEINLINE void SetGoalLocation(const FVector InLocation) { GoalLocation = InLocation; }
+	FORCEINLINE FVector GetGoalLocation() const { return GoalLocation; }	
 
 protected:
 
@@ -40,5 +62,9 @@ protected:
 	virtual FVector CalculateProjectileGoal();
 
 	void FireProjectile(FVector Origin, FRotator ProjectileDir);
+
+private:
+	/** Goal location for shooting */
+	FVector GoalLocation;
 	
 };
