@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PistolWhipTypes.h"
 #include "GameFramework/Pawn.h"
 #include "PistolPlayerPawn.generated.h"
 
@@ -21,6 +22,8 @@ public:
 
 	/** Returns Camera subobject */
 	FORCEINLINE UCameraComponent* GetCamera() const { return Camera; }
+
+	FORCEINLINE EGameModeType GetGameModeType() const { return GameModeType; }
 
 protected:
 
@@ -59,7 +62,8 @@ protected:
 	/** Distance along the spline track */
 	float TrackDistance = 0.0f;
 
-
+	/** Game Mode Type of current player */
+	EGameModeType GameModeType = EGameModeType::GMT_Invalid;
 
 #if WITH_EDITORONLY_DATA
 	/** Component shown in the editor only to indicate character facing */

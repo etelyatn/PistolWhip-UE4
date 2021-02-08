@@ -8,8 +8,8 @@
 
 void APistolWeapon_Instant::FireWeapon()
 {
-	const FVector StartTrace = GetMuzzleLocation();
-	const FVector ShootDir = GetMuzzleDirection();
+	const FVector StartTrace = GetDamageStartLocation();
+	const FVector ShootDir = GetAdjustedAim();
 	const FVector EndTrace = StartTrace + ShootDir * WeaponRange;
 
 	const FHitResult Impact = WeaponTrace(StartTrace, EndTrace);

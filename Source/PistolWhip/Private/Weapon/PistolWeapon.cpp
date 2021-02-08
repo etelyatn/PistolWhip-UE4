@@ -6,6 +6,7 @@
 #include "Components/BoxComponent.h"
 #include "DrawDebugHelpers.h"
 #include "PistolWhipTypes.h"
+#include "Player/PlayerControllers/PistolPlayerController_FP.h"
 
 APistolWeapon::APistolWeapon()
 {
@@ -19,6 +20,7 @@ APistolWeapon::APistolWeapon()
 	BoxComponent->SetupAttachment(RootComponent);
 
 	MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
+	MeshComponent->CastShadow = false;
 	MeshComponent->SetupAttachment(RootComponent);
 
 #if WITH_EDITORONLY_DATA
@@ -84,6 +86,50 @@ FVector APistolWeapon::GetMuzzleLocation() const
 FVector APistolWeapon::GetMuzzleDirection() const
 {
 	return MeshComponent->GetSocketRotation(MuzzleName).Vector();
+}
+
+FVector APistolWeapon::GetDamageStartLocation() const
+{
+	APistolPlayerController_FP* const PlayerController = OwnerPawn ? Cast<APistolPlayerController_FP>(OwnerPawn->Controller) : nullptr;
+	FVector OutStartTrace;
+
+	if (PlayerController)
+	{
+		// use player's camera
+		FVector CamLoc;
+		FRotator CamRot;
+		PlayerController->GetPlayerViewPoint(CamLoc, CamRot);
+
+		// Adjust trace so there is nothing blocking the ray between the camera and the pawn, and calculate distance from adjusted start
+		OutStartTrace = CamLoc + CamRot.Vector() * ((GetInstigator()->GetActorLocation() - CamLoc) | CamRot.Vector());
+	}
+	else
+	{
+		OutStartTrace = GetMuzzleLocation();
+	}
+
+	return OutStartTrace;
+}
+
+FVector APistolWeapon::GetAdjustedAim() const
+{
+	APistolPlayerController_FP* const PlayerController = OwnerPawn ? Cast<APistolPlayerController_FP>(OwnerPawn->Controller) : nullptr;
+	FVector FinalAim = FVector::ZeroVector;
+	
+	// If we have a FP player controller use it for the aim
+	if (PlayerController)
+	{
+		FVector CamLoc;
+		FRotator CamRot;
+		PlayerController->GetPlayerViewPoint(CamLoc, CamRot);
+		FinalAim = CamRot.Vector();
+	}
+	else
+	{
+		FinalAim = GetMuzzleDirection();
+	}
+
+	return FinalAim;
 }
 
 void APistolWeapon::Tick(float DeltaTime)

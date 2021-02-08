@@ -12,18 +12,18 @@ struct FProjectileWeaponData
 	GENERATED_BODY()
 
 	/** projectile class */
-	UPROPERTY(EditDefaultsOnly, Category=Projectile)
+	UPROPERTY(Category=Projectile, EditDefaultsOnly)
 	TSubclassOf<class APistolProjectile> ProjectileClass;
 
 	/** life time */
-	UPROPERTY(EditDefaultsOnly, Category=Projectile)
+	UPROPERTY(Category=Projectile, EditDefaultsOnly)
 	float ProjectileLife = 10.0f;
 };
 
 /**
  * 
  */
-UCLASS(Blueprintable)
+UCLASS(Abstract, Blueprintable)
 class PISTOLWHIP_API APistolWeapon_Projectile : public APistolWeapon
 {
 	GENERATED_BODY()
@@ -31,7 +31,7 @@ class PISTOLWHIP_API APistolWeapon_Projectile : public APistolWeapon
 protected:
 
 	/** weapon config */
-	UPROPERTY(EditDefaultsOnly, Category=Config)
+	UPROPERTY(Category="Weapon|Projectile", EditDefaultsOnly)
 	FProjectileWeaponData ProjectileConfig;
 
 	virtual void FireWeapon() override;

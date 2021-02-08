@@ -47,11 +47,11 @@ protected:
 	FName MuzzleName = FName("Muzzle");
 
 	/** fire animation */
-	UPROPERTY(Category=Animation, EditDefaultsOnly)
+	UPROPERTY(Category=Weapon, EditDefaultsOnly)
 	UAnimationAsset* FireAnim;
 
 	/** range of instant weapon */
-	UPROPERTY(Category=WeaponStat, EditDefaultsOnly)
+	UPROPERTY(Category=Weapon, EditDefaultsOnly)
 	float WeaponRange = 10000.0f;
 
 #if WITH_EDITORONLY_DATA
@@ -76,5 +76,11 @@ protected:
 
 	/** get direction of weapon's muzzle */
 	FVector GetMuzzleDirection() const;
+
+	/** get the originating location for damage */
+	FVector GetDamageStartLocation() const;
+
+	/** Get the aim of the weapon, allowing for adjustments to be made by the weapon */
+	virtual FVector GetAdjustedAim() const;
 
 };

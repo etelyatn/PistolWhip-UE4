@@ -10,6 +10,7 @@
 APistolPlayerPawn_FP::APistolPlayerPawn_FP()
 {
 	GetCamera()->bUsePawnControlRotation = true;
+	GameModeType = EGameModeType::GMT_FP;
 }
 
 void APistolPlayerPawn_FP::BeginPlay()

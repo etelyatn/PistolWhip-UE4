@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS(Blueprintable)
+UCLASS(Abstract, Blueprintable)
 class PISTOLWHIP_API APistolWeapon_Instant : public APistolWeapon
 {
 	GENERATED_BODY()
@@ -17,23 +17,23 @@ class PISTOLWHIP_API APistolWeapon_Instant : public APistolWeapon
 protected:
 
 	/** damage amount */
-	UPROPERTY(Category=WeaponStat, EditDefaultsOnly)
+	UPROPERTY(Category="Weapon|Instant", EditDefaultsOnly)
 	int32 HitDamage = 100;
 
 	/** Hit Magnitude for impulse calculation */
-	UPROPERTY(Category=WeaponStat, EditDefaultsOnly)
+	UPROPERTY(Category="Weapon|Instant", EditDefaultsOnly)
 	float HitMagnitude = 10000.0f;
 
 	/** type of damage */
-	UPROPERTY(Category=WeaponStat, EditDefaultsOnly)
+	UPROPERTY(Category="Weapon|Instant", EditDefaultsOnly)
 	TSubclassOf<UDamageType> DamageType;
 
 	/** smoke trail */
-	UPROPERTY(Category=Effects, EditDefaultsOnly)
+	UPROPERTY(Category="Weapon|Instant", EditDefaultsOnly)
 	UParticleSystem* TrailFX;
 
 	/** param name for beam target in smoke trail */
-	UPROPERTY(Category=Effects, EditDefaultsOnly)
+	UPROPERTY(Category="Weapon|Instant", EditDefaultsOnly)
 	FName TrailTargetParam;
 
 	/** weapon specific fire implementation */

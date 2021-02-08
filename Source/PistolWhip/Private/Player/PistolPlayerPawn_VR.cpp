@@ -8,6 +8,7 @@
 APistolPlayerPawn_VR::APistolPlayerPawn_VR()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	GameModeType = EGameModeType::GMT_VR;
 
 }
 
