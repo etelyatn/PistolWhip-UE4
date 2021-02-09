@@ -24,7 +24,7 @@ void UPistolTrackPointComponent::OnTrackPointBeginOverlap(UPrimitiveComponent* O
 {
 	APistolPlayerPawn* PlayerPawn = Cast<APistolPlayerPawn>(OtherActor);
 
-	if (PlayerPawn)
+	if (PlayerPawn && bEnabled)
 	{
 		ActivateItems();
 	}

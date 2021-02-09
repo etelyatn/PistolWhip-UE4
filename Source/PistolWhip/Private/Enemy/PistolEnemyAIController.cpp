@@ -54,14 +54,24 @@ void APistolEnemyAIController::Fire()
 	if (Weapon && CachedEnemyPawn->IsAlive())
 	{
 		/** Predict the player's head position when a projectile reach the head */
-		const float GoalReachTime = Weapon->GetGoalReachTime();
+		float GoalReachTime = Weapon->GetGoalReachTime();
 		FVector HeadLocation = CachedPlayerPawn->GetHeadLocation();
 		const FVector MuzzleLocation = Weapon->GetMuzzleLocation();
+		const FVector PlayerForwardVector = CachedPlayerPawn->GetActorForwardVector();
 
-		const float PlayerAxisDistance = abs((CachedPlayerPawn->GetActorForwardVector() * HeadLocation).Size());
-		const float EnemyAxisDistance = abs((CachedPlayerPawn->GetActorForwardVector() * MuzzleLocation).Size());
+		const float PlayerAxisDistance = abs((PlayerForwardVector * HeadLocation).Size());
+		const float EnemyAxisDistance = abs((PlayerForwardVector * MuzzleLocation).Size());
 
-		const float HitDistance = GoalReachTime * CachedPlayerPawn->GetMovementSpeed();
+		// max hit distance is a half of the axis way
+		const float MaxHitDistance = (EnemyAxisDistance - PlayerAxisDistance) / 2;
+		float HitDistance = GoalReachTime * CachedPlayerPawn->GetMovementSpeed();
+
+		// adjust goal reach time and hit distance to max hit distance
+		if (MaxHitDistance < HitDistance)
+		{
+			HitDistance = MaxHitDistance;
+			GoalReachTime = HitDistance / CachedPlayerPawn->GetMovementSpeed();
+		}
 
 		// do not shoot in the back of the player. only if enemy in forward
 		if (PlayerAxisDistance + HitDistance < EnemyAxisDistance)

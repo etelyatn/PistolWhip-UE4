@@ -33,6 +33,11 @@ public:
 
 
 protected:
+
+	/** Is the track point enabled */
+	UPROPERTY(Category=TrackPoint, EditAnywhere)
+	bool bEnabled = true;
+	
 	UFUNCTION()
 	void OnTrackPointBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };
