@@ -76,7 +76,7 @@ void APistolEnemyAIController::Fire()
 		// do not shoot in the back of the player. only if enemy in forward
 		if (PlayerAxisDistance + HitDistance < EnemyAxisDistance)
 		{
-			HeadLocation = HeadLocation + (CachedPlayerPawn->GetActorForwardVector() * HitDistance);
+			HeadLocation = HeadLocation + (PlayerForwardVector * HitDistance);
 			const float ProjectileDistance = FVector::Dist(HeadLocation, MuzzleLocation);
 
 			// do not shoot if very close to player
