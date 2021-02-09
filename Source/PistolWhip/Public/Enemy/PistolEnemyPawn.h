@@ -27,7 +27,7 @@ public:
 protected:
 
 	/** Pawn living state */
-	UPROPERTY(VisibleInstanceOnly)
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite)
 	bool bAlive = true;
 
 	/** Delay between pawn destroy */
@@ -44,6 +44,7 @@ protected:
 	FTimerHandle TimerHandle_Destroy;
 
 	/** Enemy Death Implementation */
+	UFUNCTION(BlueprintNativeEvent)
 	void Death();
 
 	void DestroyEnemy();

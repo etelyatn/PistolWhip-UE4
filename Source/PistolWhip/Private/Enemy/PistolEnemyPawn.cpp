@@ -66,21 +66,22 @@ void APistolEnemyPawn::BeginPlay()
 	EquipWeapon();
 }
 
-void APistolEnemyPawn::Death()
+void APistolEnemyPawn::Death_Implementation()
 {
 	bAlive = false;
 	Mesh->SetCollisionProfileName(FName("Ragdoll"));
 	Mesh->SetSimulatePhysics(true);
+
+	if (Weapon)
+	{
+		Weapon->Destroy();
+	}
 
 	GetWorldTimerManager().SetTimer(TimerHandle_Destroy, this, &APistolEnemyPawn::DestroyEnemy, DestroyDelay, false);
 }
 
 void APistolEnemyPawn::DestroyEnemy()
 {
-	if (Weapon)
-	{
-		Weapon->Destroy();
-	}
 	Destroy();
 }
 
