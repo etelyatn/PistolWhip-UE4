@@ -18,7 +18,7 @@ protected:
 
 	/** damage amount */
 	UPROPERTY(Category="Weapon|Instant", EditDefaultsOnly)
-	int32 HitDamage = 100;
+	int32 HitDamage = 1;
 
 	/** Hit Magnitude for impulse calculation */
 	UPROPERTY(Category="Weapon|Instant", EditDefaultsOnly)

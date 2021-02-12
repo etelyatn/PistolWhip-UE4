@@ -1,12 +1,22 @@
 // 2021 github.com/EugeneTel/PistolWhip-UE4
 
 #include "Player/PistolPlayerPawn.h"
+
+#include "Log.h"
+#include "PistolWhip.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
-#include "COmponents/CapsuleComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/PostProcessComponent.h"
 #include "Engine/CollisionProfile.h"
 #include "Kismet/GameplayStatics.h"
 #include "Gameplay/PistolSplineTrack.h"
+#include "Weapon/PistolProjectile.h"
+#include "Weapon/PistolWeapon_Instant.h"
+
+
+const FName APistolPlayerPawn::HeadCollisionProfileName(TEXT("PlayerHead"));
+const FName APistolPlayerPawn::BodyCollisionProfileName(TEXT("PlayerBody"));
 
 APistolPlayerPawn::APistolPlayerPawn()
 {
@@ -14,7 +24,7 @@ APistolPlayerPawn::APistolPlayerPawn()
 	
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(FName("CapsuleComponent"));
 	CapsuleComponent->InitCapsuleSize(34.0f, 90.0f);
-	CapsuleComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
+	CapsuleComponent->SetCollisionProfileName(BodyCollisionProfileName);
 	RootComponent = CapsuleComponent;
 
 	BodyRoot = CreateDefaultSubobject<USceneComponent>(TEXT("BodyRoot"));
@@ -25,8 +35,11 @@ APistolPlayerPawn::APistolPlayerPawn()
 
 	HeadCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("HeadCapsule"));
 	HeadCapsule->InitCapsuleSize(12.0f, 12.0f);
-	HeadCapsule->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
+	HeadCapsule->SetCollisionProfileName(HeadCollisionProfileName);
 	HeadCapsule->SetupAttachment(Camera);
+
+	PostProcessComponent = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PostProcessComponent"));
+	PostProcessComponent->SetupAttachment(GetRootComponent());
 
 #if WITH_EDITORONLY_DATA
 	ArrowComponent = CreateEditorOnlyDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
@@ -38,6 +51,16 @@ APistolPlayerPawn::APistolPlayerPawn()
 		ArrowComponent->bIsScreenSizeScaled = true;
 	}
 #endif // WITH_EDITORONLY_DATA
+}
+
+float APistolPlayerPawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (HealthComponent)
+	{
+		HealthComponent->TakeDamage(DamageAmount);
+	}
+	
+	return DamageAmount;
 }
 
 FVector APistolPlayerPawn::GetHeadLocation() const
@@ -64,6 +87,21 @@ void APistolPlayerPawn::BeginPlay()
 			SplineTrack = Cast<APistolSplineTrack>(FoundActors[0]);
 		}
 	}
+
+	// create health component
+	if (HealthComponentClass)
+	{
+		HealthComponent = NewObject<UPistolPlayerHealthComponent>(this, HealthComponentClass, FName("HealthComponent"));
+		HealthComponent->RegisterComponent();
+		HealthComponent->SetPlayerPawn(this);
+		HealthComponent->SetHealthData(HealthData);		
+	} else
+	{
+		UE_LOG(LogPistolWhip, Log, TEXT("APistolPlayerPawn::BeginPlay() - HealthComponentClass is not set!"))
+	}
+
+	// subscribe on events
+	HeadCapsule->OnComponentBeginOverlap.AddDynamic(this, &APistolPlayerPawn::OnHeadOverlap);
 }
 
 void APistolPlayerPawn::Tick(float DeltaSeconds)
@@ -96,3 +134,14 @@ void APistolPlayerPawn::MoveBySplineTrack()
 	SetActorLocation(NewActorLocation);
 }
 
+void APistolPlayerPawn::OnHeadOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& OverlapInfo)
+{
+	// apply damage on hit something
+	if (!OtherActor->IsA(APistolProjectile::StaticClass()) && !OtherActor->IsA(APistolWeapon_Instant::StaticClass()))
+	{
+		if (HealthComponent)
+		{
+			HealthComponent->TakeDamage(1.0f);
+		}
+	}
+}

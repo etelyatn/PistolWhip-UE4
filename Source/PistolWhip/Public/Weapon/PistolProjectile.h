@@ -35,6 +35,9 @@ protected:
 	/** controller that fired me (cache for damage calculations) */
 	TWeakObjectPtr<AController> CachedController;
 
+	/** collision name */
+	static const FName ProjectileCollisionProfileName;
+
 	/** shutdown projectile and prepare for destruction */
 	void DisableAndDestroy();
 

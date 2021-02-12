@@ -2,8 +2,14 @@
 
 
 #include "Weapon/PistolProjectile.h"
+
+#include "Log.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Player/PistolPlayerPawn.h"
+
+const FName APistolProjectile::ProjectileCollisionProfileName(TEXT("Projectile"));
 
 APistolProjectile::APistolProjectile()
 {
@@ -13,7 +19,7 @@ APistolProjectile::APistolProjectile()
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
 	CollisionComponent->InitSphereRadius(5.0f);
 	CollisionComponent->bTraceComplexOnMove = true;
-	CollisionComponent->SetCollisionProfileName(FName("Projectile"));
+	CollisionComponent->SetCollisionProfileName(ProjectileCollisionProfileName);
 	SetRootComponent(CollisionComponent);
 
 	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("MovementComponent"));
@@ -54,8 +60,17 @@ void APistolProjectile::InitVelocity(FVector& ShootDirection)
 
 void APistolProjectile::OnImpact(const FHitResult& HitResult)
 {
+	APistolPlayerPawn* PlayerPawn = Cast<APistolPlayerPawn>(HitResult.GetActor());
+	if (PlayerPawn)
+	{
+		const FDamageEvent DamageEvent;
+		PlayerPawn->TakeDamage(1.0, DamageEvent, CachedController.Get(), CachedController->GetPawn());
+	}
+
+	DisableAndDestroy();
 }
 
 void APistolProjectile::DisableAndDestroy()
 {
+	Destroy();
 }

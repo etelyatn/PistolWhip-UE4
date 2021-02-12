@@ -4,12 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "PistolWhipTypes.h"
+#include "Components/PistolPlayerHealthComponent.h"
 #include "GameFramework/Pawn.h"
 #include "PistolPlayerPawn.generated.h"
 
 class UCapsuleComponent;
 class UArrowComponent;
 class UCameraComponent;
+class UPostProcessComponent;
 
 UCLASS(Abstract)
 class PISTOLWHIP_API APistolPlayerPawn : public APawn
@@ -19,11 +21,12 @@ class PISTOLWHIP_API APistolPlayerPawn : public APawn
 public:
 	/** Sets default values for this pawn's properties */
 	APistolPlayerPawn();
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	/** Returns Camera subobject */
 	FORCEINLINE UCameraComponent* GetCamera() const { return Camera; }
-
 	FORCEINLINE EGameModeType GetGameModeType() const { return GameModeType; }
+	FORCEINLINE UPostProcessComponent* GetPostProcessComponent() const { return PostProcessComponent; }
 
 	/** Get current head location */
 	FVector GetHeadLocation() const;
@@ -50,19 +53,35 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class USceneComponent* BodyRoot;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class UPostProcessComponent* PostProcessComponent;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+	class UPistolPlayerHealthComponent* HealthComponent;
+
 	/** spline track for pawn movement */
 	UPROPERTY(BlueprintReadWrite)
 	class APistolSplineTrack* SplineTrack;
 
-	UPROPERTY(Category=PistolPlayer, EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(Category=PistolPlayer, EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<class APistolWeapon> WeaponClass;
 
+	UPROPERTY(Category="PistolPlayer|Health", EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UPistolPlayerHealthComponent> HealthComponentClass;
+
+	UPROPERTY(Category="PistolPlayer|Health", EditDefaultsOnly, BlueprintReadOnly)
+	FPlayerHealthData HealthData;
+
+	/** collision names */
+	static const FName HeadCollisionProfileName;
+	static const FName BodyCollisionProfileName;
+
 	/** should a pawn move along a spline track */
-	UPROPERTY(Category=PistolPlayer, EditDefaultsOnly)
+	UPROPERTY(Category="PistolPlayer|Movement", EditDefaultsOnly)
 	bool bMoveBySplineTrack = true;
 
 	/** Pawn movement speed along a Spline track */
-	UPROPERTY(Category=PistolPlayer, EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(Category="PistolPlayer|Movement", EditDefaultsOnly, BlueprintReadWrite)
 	float SplineTrackSpeed = 200.0f;
 	
 	/** Distance along the spline track */
@@ -80,4 +99,6 @@ protected:
 	/** Pawn movement along a spline track */
 	void MoveBySplineTrack();
 
+	UFUNCTION()
+	void OnHeadOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& OverlapInfo);
 };
