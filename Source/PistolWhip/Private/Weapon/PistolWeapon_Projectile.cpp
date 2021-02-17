@@ -31,9 +31,7 @@ float APistolWeapon_Projectile::GetGoalReachTime() const
 void APistolWeapon_Projectile::FireWeapon()
 {
 	const FVector ProjectileStart = GetMuzzleLocation();
-
 	const FVector ProjectileGoal = GetGoalLocation().IsZero() ? CalculateProjectileGoal() : GetGoalLocation();
-	ULog::Vector(GetGoalLocation(), true, "Loc: ");
 	const FRotator ProjectileDir = UKismetMathLibrary::FindLookAtRotation(ProjectileStart, ProjectileGoal);
 	
 	FireProjectile(ProjectileStart, ProjectileDir);

@@ -8,6 +8,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Engine/CollisionProfile.h"
 
+FOnEnemyPawnHitDelegate APistolEnemyPawn::OnHit;
+
 APistolEnemyPawn::APistolEnemyPawn()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -54,6 +56,8 @@ APistolEnemyPawn::APistolEnemyPawn()
 
 float APistolEnemyPawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	OnHit.Broadcast(this);
+	
 	Death();
 	
 	return DamageAmount;

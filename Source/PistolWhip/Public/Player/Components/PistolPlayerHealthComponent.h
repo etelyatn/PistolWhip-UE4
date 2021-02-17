@@ -4,13 +4,66 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+
 #include "PistolPlayerHealthComponent.generated.h"
 
 class APistolPlayerPawn;
+class APistolEnemyPawn;
 
 DECLARE_MULTICAST_DELEGATE(FOnPlayerDeathDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnShieldDestroyedDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnShieldRestoredDelegate);
 
-/** Structure for storing health data and health state */
+/** storing shield information */
+USTRUCT(BlueprintType)
+struct FPlayerShieldData
+{
+	GENERATED_BODY()
+
+	/** is the shield active */
+	UPROPERTY(Category=PlayerHealth, EditDefaultsOnly)
+	bool bActive;
+
+	/** is the shield fully charged */
+	UPROPERTY(Category=PlayerHealth, VisibleInstanceOnly)
+	bool bDestroyed;
+	
+	/** Current player's shield */
+	UPROPERTY(Category=PlayerHealth, VisibleInstanceOnly)
+	float CurrentShield;
+
+	/** Max player's shield */
+	UPROPERTY(Category=PlayerHealth, EditDefaultsOnly)
+	float MaxShield;
+
+	/** How many hits before the shield is restored  */
+	UPROPERTY(Category=PlayerHealth, EditDefaultsOnly)
+	int8 RestoreHits;
+
+	/** How many hits for the shield restoring */
+	UPROPERTY(Category=PlayerHealth, VisibleInstanceOnly)
+	int8 CurrentHits;
+
+	/** Reset current shield state to max shield state */
+	void ResetShield()
+	{
+		CurrentShield = MaxShield;
+		CurrentHits = 0;
+		bDestroyed = false;
+	}
+
+	FPlayerShieldData()
+		: bActive(true)
+		  , bDestroyed(false)
+		  , CurrentShield(0.0f)
+		  , MaxShield(1.0f)
+		  , RestoreHits(5)
+		  , CurrentHits(0)
+	{
+	}
+};
+
+/** storing health data and health state */
 USTRUCT(BlueprintType)
 struct FPlayerHealthData
 {
@@ -20,6 +73,10 @@ struct FPlayerHealthData
 	UPROPERTY(Category=PlayerHealth, VisibleInstanceOnly)
 	bool bAlive;
 
+	/** Is player immortal or not */
+	UPROPERTY(Category=PlayerHealth, EditDefaultsOnly)
+	bool bImmortal;
+
 	/** Current player's health */
 	UPROPERTY(Category=PlayerHealth, VisibleInstanceOnly)
 	float CurrentHealth;
@@ -27,10 +84,6 @@ struct FPlayerHealthData
 	/** Max player's health */
 	UPROPERTY(Category=PlayerHealth, EditDefaultsOnly)
 	float MaxHealth;
-	
-	/** Is player immortal or not */
-	UPROPERTY(Category=PlayerHealth, EditDefaultsOnly)
-	bool bImmortal;
 
 	/** the overlay will be set to the player's postprocess */
 	UPROPERTY(Category=PlayerHealth, EditDefaultsOnly)
@@ -52,14 +105,13 @@ struct FPlayerHealthData
 
 	FPlayerHealthData()
 		: bAlive(true)
-	      , CurrentHealth(0)
-		  , MaxHealth(2.0f)
 		  , bImmortal(false)
+		  , CurrentHealth(0)
+		  , MaxHealth(1.0f)
 		  , DamageOverlayMaterial(nullptr)
 		  , DamageOverlayMaterialInstance(nullptr)
 		  , DamageOverlayParameter(FName("Visibility"))
-	{
-	}
+	{}
 };
 
 
@@ -78,6 +130,12 @@ public:
 	/** Fired when the player is dead */
 	FOnPlayerDeathDelegate OnPlayerDeath;
 
+	/** fired when the shield was destroyed */
+	FOnShieldDestroyedDelegate OnShieldDestroyed;
+
+	/** fired when the shield was restored */
+	FOnShieldRestoredDelegate OnShieldRestored;
+
 	/** Health component register a damage */
 	UFUNCTION(BlueprintCallable)
 	void TakeDamage(float Amount);
@@ -89,17 +147,33 @@ public:
 	/** Setup config data for health component */
 	void SetHealthData(FPlayerHealthData& InHealthData);
 
+	/** Setup config data for shield */
+	void SetShieldData(FPlayerShieldData& InShieldData);
+
 protected:
 
 	/** current health configs and state */
 	UPROPERTY(VisibleDefaultsOnly)
 	FPlayerHealthData HealthData;
 
+	/** current shield configs and state */
+	UPROPERTY(VisibleDefaultsOnly)
+	FPlayerShieldData ShieldData;
+
 	UPROPERTY(BlueprintReadOnly)
 	APistolPlayerPawn* PlayerPawn;
 
 	/** player death */
 	void Death();
+
+	/** destroy the shield */
+	void DestroyShield();
+
+	/** the shield is fully restored */
+	void ShieldFullyRestored();
+
+	/** restore the shield for amount */ 
+	void RestoreShield(int Hits);
 
 	/** blueprint damage notification */
 	UFUNCTION(BlueprintImplementableEvent, Category=PlayerHealth)
@@ -109,10 +183,28 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category=PlayerHealth)
 	void NotifyDeath();
 
+	/** blueprint shield destroyed notification */
+	UFUNCTION(BlueprintImplementableEvent, Category=PlayerHealth)
+	void NotifyShieldDestroyed();
+
+	/** blueprint shield restoring notification */
+	UFUNCTION(BlueprintImplementableEvent, Category=PlayerHealth)
+	void NotifyShieldFullyRestored();
+
+	/** creates damage overlay material instance and attach to post process */
 	UFUNCTION(BlueprintCallable, Category=PlayerHealth)
 	void CreateDamageOverlay();
 
+	/** Update damage overlay material instance visibility property */
 	UFUNCTION(BlueprintCallable, Category=PlayerHealth)
 	void SetDamageOverlayVisibility(float Value);
+
+private:
+
+	/** Handle for enemy firing */
+	FTimerHandle TimerHandle_ShieldRecharging;
+
+	/** On enemy hit handler */
+	void OnEnemyPawnHit(APistolEnemyPawn* EnemyPawn);
 
 };

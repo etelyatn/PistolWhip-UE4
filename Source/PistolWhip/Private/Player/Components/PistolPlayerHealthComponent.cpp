@@ -6,6 +6,7 @@
 #include "Log.h"
 #include "PistolWhip.h"
 #include "Components/PostProcessComponent.h"
+#include "Enemy/PistolEnemyPawn.h"
 #include "Player/PistolPlayerPawn.h"
 #include "Materials/MaterialInstanceDynamic.h"
 
@@ -18,20 +19,41 @@ UPistolPlayerHealthComponent::UPistolPlayerHealthComponent()
 void UPistolPlayerHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	APistolEnemyPawn::OnHit.AddUObject(this, &UPistolPlayerHealthComponent::OnEnemyPawnHit);
 }
 
 void UPistolPlayerHealthComponent::TakeDamage(const float Amount)
 {
-	if (!HealthData.bImmortal)
+	if (!HealthData.bAlive)
 	{
-		HealthData.CurrentHealth -= Amount;
+		return;
 	}
 
+	// notify blueprints to show VFX and SFX
 	NotifyTakeDamage();
 	
-	if (HealthData.CurrentHealth <= 0.0f && !HealthData.bImmortal)
+	if (!HealthData.bImmortal)
 	{
-		Death();
+		// the shield takes damage first
+		if (ShieldData.bActive && ShieldData.CurrentShield > 0.0f)
+		{
+			ShieldData.CurrentShield -= Amount;
+
+			if (ShieldData.CurrentShield <= 0.0f)
+			{
+				DestroyShield();
+			}
+		}
+		else
+		{
+			HealthData.CurrentHealth -= Amount;
+		}
+
+		if (HealthData.CurrentHealth <= 0.0f)
+		{
+			Death();
+		}
 	}
 }
 
@@ -49,12 +71,55 @@ void UPistolPlayerHealthComponent::SetHealthData(FPlayerHealthData& InHealthData
 	HealthData.ResetHealth();
 }
 
+void UPistolPlayerHealthComponent::SetShieldData(FPlayerShieldData& InShieldData)
+{
+	ShieldData = InShieldData;
+	ShieldData.ResetShield();
+}
+
 void UPistolPlayerHealthComponent::Death()
 {
 	HealthData.bAlive = false;
 
 	OnPlayerDeath.Broadcast();
 	NotifyDeath();
+}
+
+void UPistolPlayerHealthComponent::DestroyShield()
+{
+	ShieldData.bDestroyed = true;
+	
+	if (OnShieldDestroyed.IsBound())
+	{
+		OnShieldDestroyed.Broadcast();
+	}
+	
+	NotifyShieldDestroyed();
+}
+
+void UPistolPlayerHealthComponent::ShieldFullyRestored()
+{
+	ShieldData.ResetShield();
+
+	if (OnShieldRestored.IsBound())
+	{
+		OnShieldRestored.Broadcast();
+	}
+
+	NotifyShieldFullyRestored();
+}
+
+void UPistolPlayerHealthComponent::RestoreShield(const int Hits)
+{
+	if (HealthData.bAlive && ShieldData.bActive && ShieldData.bDestroyed)
+	{
+		ShieldData.CurrentHits += Hits;
+
+		if (ShieldData.CurrentHits >= ShieldData.RestoreHits)
+		{
+			ShieldFullyRestored();
+		}
+	}
 }
 
 void UPistolPlayerHealthComponent::CreateDamageOverlay()
@@ -77,6 +142,12 @@ void UPistolPlayerHealthComponent::SetDamageOverlayVisibility(const float Value)
 	{
 		UE_LOG(LogPistolWhip, Log, TEXT("UPistolPlayerHealthComponent::SetDamageOverlayVisibility - DamageOverlayMaterial is not set!"));
 	}
+}
+
+void UPistolPlayerHealthComponent::OnEnemyPawnHit(APistolEnemyPawn* EnemyPawn)
+{
+	// try to restore the shield
+	RestoreShield(1);
 }
 
 

@@ -8,11 +8,12 @@
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/PostProcessComponent.h"
-#include "Engine/CollisionProfile.h"
+#include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Gameplay/PistolSplineTrack.h"
 #include "Weapon/PistolProjectile.h"
 #include "Weapon/PistolWeapon_Instant.h"
+#include "Enemy/PistolEnemyPawn.h"
 
 
 const FName APistolPlayerPawn::HeadCollisionProfileName(TEXT("PlayerHead"));
@@ -40,6 +41,19 @@ APistolPlayerPawn::APistolPlayerPawn()
 
 	PostProcessComponent = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PostProcessComponent"));
 	PostProcessComponent->SetupAttachment(GetRootComponent());
+	
+	CameraWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("CameraWidget"));
+	CameraWidget->SetupAttachment(Camera);
+	CameraWidget->SetDrawSize(FVector2D(1000.f, 1000.f));
+	CameraWidget->SetPivot(FVector2D(1.0f, 1.0f));
+	CameraWidget->SetDrawAtDesiredSize(true);
+	CameraWidget->SetGenerateOverlapEvents(false);
+	CameraWidget->SetHiddenInGame(true);
+	CameraWidget->SetRelativeLocation(FVector(1000.0f, 500.0f, -500.0f));
+	CameraWidget->SetRelativeRotation(FRotator(180.0f, 0.0f, 0.0f));
+	CameraWidget->SetBlendMode(EWidgetBlendMode::Transparent);
+	CameraWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CameraWidget->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 
 #if WITH_EDITORONLY_DATA
 	ArrowComponent = CreateEditorOnlyDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
@@ -94,7 +108,8 @@ void APistolPlayerPawn::BeginPlay()
 		HealthComponent = NewObject<UPistolPlayerHealthComponent>(this, HealthComponentClass, FName("HealthComponent"));
 		HealthComponent->RegisterComponent();
 		HealthComponent->SetPlayerPawn(this);
-		HealthComponent->SetHealthData(HealthData);		
+		HealthComponent->SetHealthData(HealthData);
+		HealthComponent->SetShieldData(ShieldData);
 	} else
 	{
 		UE_LOG(LogPistolWhip, Log, TEXT("APistolPlayerPawn::BeginPlay() - HealthComponentClass is not set!"))
@@ -135,13 +150,21 @@ void APistolPlayerPawn::MoveBySplineTrack()
 }
 
 void APistolPlayerPawn::OnHeadOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& OverlapInfo)
-{
+{	
 	// apply damage on hit something
-	if (!OtherActor->IsA(APistolProjectile::StaticClass()) && !OtherActor->IsA(APistolWeapon_Instant::StaticClass()))
+	if (HealthComponent
+		&& !OtherActor->IsA(APistolProjectile::StaticClass())
+		&& !OtherActor->IsA(APistolWeapon::StaticClass())
+		&& PreviousOverlappedActor != OtherActor
+		)
 	{
-		if (HealthComponent)
+		APistolEnemyPawn* EnemyPawn = Cast<APistolEnemyPawn>(OtherActor);
+		if (EnemyPawn && !EnemyPawn->IsAlive())
 		{
-			HealthComponent->TakeDamage(1.0f);
+			return;
 		}
+
+		PreviousOverlappedActor = OtherActor;
+		HealthComponent->TakeDamage(1.0f);
 	}
 }

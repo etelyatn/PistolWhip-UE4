@@ -13,6 +13,8 @@ class UArrowComponent;
 class UCameraComponent;
 class UPostProcessComponent;
 
+DECLARE_MULTICAST_DELEGATE(FOnEnemyHitDelegate)
+
 UCLASS(Abstract)
 class PISTOLWHIP_API APistolPlayerPawn : public APawn
 {
@@ -56,6 +58,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UPostProcessComponent* PostProcessComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class UWidgetComponent* CameraWidget;
+
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 	class UPistolPlayerHealthComponent* HealthComponent;
 
@@ -71,6 +76,9 @@ protected:
 
 	UPROPERTY(Category="PistolPlayer|Health", EditDefaultsOnly, BlueprintReadOnly)
 	FPlayerHealthData HealthData;
+	
+	UPROPERTY(Category="PistolPlayer|Health", EditDefaultsOnly, BlueprintReadOnly)
+	FPlayerShieldData ShieldData;
 
 	/** collision names */
 	static const FName HeadCollisionProfileName;
@@ -101,4 +109,9 @@ protected:
 
 	UFUNCTION()
 	void OnHeadOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& OverlapInfo);
+
+private:
+
+	
+	TWeakObjectPtr<AActor> PreviousOverlappedActor;
 };

@@ -8,6 +8,8 @@
 
 #include "PistolEnemyPawn.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnemyPawnHitDelegate, class APistolEnemyPawn*);
+
 UCLASS()
 class PISTOLWHIP_API APistolEnemyPawn : public APawn
 {
@@ -20,6 +22,9 @@ public:
 
 	FORCEINLINE USkeletalMeshComponent* GetMesh() const { return Mesh; }
 	FORCEINLINE APistolWeapon* GetWeapon() const { return Weapon; }
+
+	/** Global notification when an enemy was hit */
+	static FOnEnemyPawnHitDelegate OnHit;
 
 	/** check if pawn is still alive */
 	bool IsAlive() const;
