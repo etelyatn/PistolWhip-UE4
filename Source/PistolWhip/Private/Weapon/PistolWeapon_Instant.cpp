@@ -5,6 +5,16 @@
 #include "Enemy/PistolEnemyPawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "PistolWhipTypes.h"
+
+APistolWeapon_Instant::APistolWeapon_Instant()
+{
+	// defaults
+	bUseAim = true;
+	HitDamage = 1;
+	HitMagnitude = 10000.0f;
+	AimRadius = 100.f;
+}
 
 void APistolWeapon_Instant::FireWeapon()
 {
@@ -13,6 +23,20 @@ void APistolWeapon_Instant::FireWeapon()
 	const FVector EndTrace = StartTrace + ShootDir * WeaponRange;
 
 	const FHitResult Impact = WeaponTrace(StartTrace, EndTrace);
+
+	// use aiming if the hit 
+	if (bUseAim && (!Impact.GetActor() || !Impact.GetActor()->IsA(APistolEnemyPawn::StaticClass())))
+	{
+		const FHitResult ImpactAim = AimTrace(StartTrace, EndTrace);
+
+		// adjust hit to the aiming helper result
+		if (ImpactAim.bBlockingHit)
+		{
+			ProcessInstantHit(ImpactAim, StartTrace, ImpactAim.ImpactPoint, ShootDir);
+			return;
+		}
+	}
+	
 	ProcessInstantHit(Impact, StartTrace, EndTrace, ShootDir);
 }
 
@@ -70,4 +94,17 @@ void APistolWeapon_Instant::SpawnTrailEffect(const FVector& EndPoint) const
 	{
 		TrailPSC->SetVectorParameter(TrailTargetParam, EndPoint);
 	}
+}
+
+FHitResult APistolWeapon_Instant::AimTrace(const FVector& TraceFrom, const FVector& TraceTo) const
+{
+	FHitResult Hit(ForceInit);
+	const EDrawDebugTrace::Type DrawDebugType = bDebug ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
+	TArray<AActor*> ActorsToIgnore;
+	ActorsToIgnore.Add(OwnerPawn);
+	
+	UKismetSystemLibrary::SphereTraceSingle(GetWorld(), TraceFrom, TraceTo, AimRadius,
+		UEngineTypes::ConvertToTraceType(COLLISION_WEAPON_TRACE), false, ActorsToIgnore, DrawDebugType, Hit, true);
+
+	return Hit;	
 }

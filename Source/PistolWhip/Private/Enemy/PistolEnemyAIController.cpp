@@ -16,13 +16,14 @@ void APistolEnemyAIController::SetPawn(APawn* InPawn)
 	Super::SetPawn(InPawn);
 
 	CachedEnemyPawn = Cast<APistolEnemyPawn>(InPawn);
+
+	// init the enemy firing timer 
+	InitFiring();
 }
 
 void APistolEnemyAIController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	GetWorldTimerManager().SetTimer(TimerHandle_Firing, this, &APistolEnemyAIController::Fire, FiringDelay, true);
 
 	CachedPlayerPawn = Cast<APistolPlayerPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 }
@@ -43,6 +44,14 @@ void APistolEnemyAIController::UpdateControlRotation(float DeltaTime, bool bUpda
 	}	
 }
 
+void APistolEnemyAIController::InitFiring()
+{
+	if (CachedEnemyPawn.IsValid())
+	{
+		GetWorldTimerManager().SetTimer(TimerHandle_Firing, this, &APistolEnemyAIController::Fire, CachedEnemyPawn->GetEnemyData().FiringDelay, true);
+	}
+}
+
 void APistolEnemyAIController::Fire()
 {
 	if (!CachedEnemyPawn.IsValid() || !CachedPlayerPawn.IsValid())
@@ -51,7 +60,7 @@ void APistolEnemyAIController::Fire()
 	}
 
 	APistolWeapon_Projectile* Weapon = Cast<APistolWeapon_Projectile>(CachedEnemyPawn->GetWeapon());
-	if (Weapon && CachedEnemyPawn->IsAlive())
+	if (Weapon && CachedEnemyPawn->IsAlive() && CachedEnemyPawn->GetEnemyData().bFiringEnabled)
 	{
 		/** Predict the player's head position when a projectile reach the head */
 		float GoalReachTime = Weapon->GetGoalReachTime();

@@ -17,15 +17,22 @@ struct FProjectileWeaponData
 
 	/** life time */
 	UPROPERTY(Category=Projectile, EditDefaultsOnly)
-	float ProjectileLife = 10.0f;
+	float ProjectileLife;
 
 	/** projectile movement speed */
 	UPROPERTY(Category=Projectile, VisibleInstanceOnly)
-	float ProjectileSpeed = 0.0f;
+	float ProjectileSpeed;
 
 	/** how much time needed for the projectile to reach the goal */ 
 	UPROPERTY(Category=Projectile, EditDefaultsOnly)
-	float GoalReachTime = 2.0f;
+	float GoalReachTime;
+
+	FProjectileWeaponData()
+		: ProjectileLife(10.0f)
+		, ProjectileSpeed(0.0f)
+		, GoalReachTime(2.0f)
+	{
+	}
 };
 
 /**

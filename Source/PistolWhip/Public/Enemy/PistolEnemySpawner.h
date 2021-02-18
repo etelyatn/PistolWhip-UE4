@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "PistolEnemyPawn.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/PistolActivatableInterface.h"
 
@@ -27,8 +29,13 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere)
+	/** enemy class for spawning */
+	UPROPERTY(Category=EnemySpawner, EditAnywhere)
 	TSubclassOf<APistolEnemyPawn> EnemyPawnClass;
+
+	/** spawned enemy configs */
+	UPROPERTY(Category=EnemySpawner, EditAnywhere)
+	FEnemyData EnemyData;
 
 #if WITH_EDITOR
 	/** Capsule for spawner visualization */

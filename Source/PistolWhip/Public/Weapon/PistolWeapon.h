@@ -36,7 +36,7 @@ protected:
 		
 	/** Enable debug mode */
 	UPROPERTY(Category=Weapon, EditAnywhere)
-	bool bDebug = false;
+	bool bDebug;
 
 	UPROPERTY(Category=Weapon, VisibleAnywhere)
 	class USceneComponent* SceneComponent;
@@ -50,7 +50,7 @@ protected:
 
 	/** name of bone/socket for muzzle in weapon mesh */
 	UPROPERTY(Category=Weapon, EditDefaultsOnly)
-	FName MuzzleName = FName("Muzzle");
+	FName MuzzleName;
 
 	/** fire animation */
 	UPROPERTY(Category=Weapon, EditDefaultsOnly)
@@ -58,7 +58,7 @@ protected:
 
 	/** range of instant weapon */
 	UPROPERTY(Category=Weapon, EditDefaultsOnly)
-	float WeaponRange = 10000.0f;
+	float WeaponRange;
 
 #if WITH_EDITORONLY_DATA
 	/** Component shown in the editor only to indicate weapon facing */

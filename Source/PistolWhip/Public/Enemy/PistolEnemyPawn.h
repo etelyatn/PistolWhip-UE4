@@ -10,6 +10,30 @@
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnemyPawnHitDelegate, class APistolEnemyPawn*);
 
+/** enemy configs */
+USTRUCT(BlueprintType)
+struct FEnemyData
+{
+	GENERATED_BODY()
+
+	/** is firing enabled for the enemy */
+	UPROPERTY(Category=EnemyData, EditAnywhere)
+	bool bFiringEnabled;
+
+	/** Delay between firing */
+	UPROPERTY(Category=EnemyData, EditAnywhere)
+	float FiringDelay;
+
+	/** the weapon will be added to the enemy */
+	UPROPERTY(Category=EnemyData, EditAnywhere)
+	TSubclassOf<APistolWeapon> WeaponClass;
+
+	FEnemyData()
+		: bFiringEnabled(true)
+		, FiringDelay(2.0f)
+	{}
+};
+
 UCLASS()
 class PISTOLWHIP_API APistolEnemyPawn : public APawn
 {
@@ -22,6 +46,8 @@ public:
 
 	FORCEINLINE USkeletalMeshComponent* GetMesh() const { return Mesh; }
 	FORCEINLINE APistolWeapon* GetWeapon() const { return Weapon; }
+	FORCEINLINE void SetEnemyData(FEnemyData& InEnemyData) { EnemyData = InEnemyData; }
+	FORCEINLINE FEnemyData& GetEnemyData() { return EnemyData; }
 
 	/** Global notification when an enemy was hit */
 	static FOnEnemyPawnHitDelegate OnHit;
@@ -31,19 +57,20 @@ public:
 
 protected:
 
+	/** enemy settings */
+	UPROPERTY(Category=EnemyPawn, EditAnywhere)
+	FEnemyData EnemyData;
+
 	/** Pawn living state */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite)
-	bool bAlive = true;
+	bool bAlive;
 
 	/** Delay between pawn destroy */
 	UPROPERTY(Category=EnemyPawn, EditDefaultsOnly)
-	float DestroyDelay = 2.0f;
+	float DestroyDelay;
 
 	UPROPERTY(Category="EnemyPawn|Weapon", EditDefaultsOnly)
 	FName WeaponSocketName;
-
-	UPROPERTY(Category="EnemyPawn|Weapon", EditDefaultsOnly)
-	TSubclassOf<APistolWeapon> WeaponClass;
 	
 	/** Handle for enemy destroy */
 	FTimerHandle TimerHandle_Destroy;
@@ -54,6 +81,8 @@ protected:
 
 	void DestroyEnemy();
 
+	/** equip the weapon specified in enemy data */
+	UFUNCTION(BlueprintCallable)
 	void EquipWeapon();
 
 private:

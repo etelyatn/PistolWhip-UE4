@@ -25,11 +25,10 @@ public:
 	/** Update direction AI is looking on Player */
 	virtual void UpdateControlRotation(float DeltaTime, bool bUpdatePawn = true) override;
 
-protected:
+	/** Init enemy firing timer */
+	void InitFiring();
 
-	/** Delay between firing */
-	UPROPERTY(Category="Enemy AI Controller|Weapon", EditDefaultsOnly)
-	float FiringDelay = 2.0f;
+protected:
 
 	/** Handle for enemy firing */
 	FTimerHandle TimerHandle_Firing;

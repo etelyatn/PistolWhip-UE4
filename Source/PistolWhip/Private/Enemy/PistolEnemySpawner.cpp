@@ -37,6 +37,7 @@ void APistolEnemySpawner::Spawn()
 	{
 		const FRotator EnemyRotation = FRotator::ZeroRotator;
 		APistolEnemyPawn* NewEnemy = GetWorld()->SpawnActor<APistolEnemyPawn>(EnemyPawnClass, GetActorLocation(), EnemyRotation);
+		NewEnemy->SetEnemyData(EnemyData);
 	}
 }
 

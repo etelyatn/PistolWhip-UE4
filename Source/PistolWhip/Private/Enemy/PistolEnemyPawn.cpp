@@ -7,6 +7,7 @@
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/CollisionProfile.h"
+#include "Weapon/PistolWeapon_Projectile.h"
 
 FOnEnemyPawnHitDelegate APistolEnemyPawn::OnHit;
 
@@ -52,6 +53,10 @@ APistolEnemyPawn::APistolEnemyPawn()
 		Mesh->SetCanEverAffectNavigation(false);
 	}
 
+	// defaults
+	bAlive = true;
+	DestroyDelay = 2.0f;
+
 }
 
 float APistolEnemyPawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -66,8 +71,6 @@ float APistolEnemyPawn::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 void APistolEnemyPawn::BeginPlay()
 {
 	Super::BeginPlay();
-
-	EquipWeapon();
 }
 
 void APistolEnemyPawn::Death_Implementation()
@@ -91,9 +94,9 @@ void APistolEnemyPawn::DestroyEnemy()
 
 void APistolEnemyPawn::EquipWeapon()
 {
-	if (GetWorld() && WeaponClass)
+	if (GetWorld() && EnemyData.WeaponClass && bAlive)
 	{
-		Weapon = GetWorld()->SpawnActor<APistolWeapon>(WeaponClass);
+		Weapon = GetWorld()->SpawnActor<APistolWeapon>(EnemyData.WeaponClass);
 		if (Weapon)
 		{
 			Weapon->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocketName);

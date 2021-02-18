@@ -14,15 +14,26 @@ class PISTOLWHIP_API APistolWeapon_Instant : public APistolWeapon
 {
 	GENERATED_BODY()
 
+public:
+	APistolWeapon_Instant();
+
 protected:
 
 	/** damage amount */
 	UPROPERTY(Category="Weapon|Instant", EditDefaultsOnly)
-	int32 HitDamage = 1;
+	int32 HitDamage;
+
+	/** should weapon use the aiming */
+	UPROPERTY(Category="Weapon|Instant", EditDefaultsOnly)
+	bool bUseAim;
+
+	/** Radius of a collision trace sphere for aiming */
+	UPROPERTY(Category="Weapon|Instant", EditDefaultsOnly)
+	float AimRadius;
 
 	/** Hit Magnitude for impulse calculation */
 	UPROPERTY(Category="Weapon|Instant", EditDefaultsOnly)
-	float HitMagnitude = 10000.0f;
+	float HitMagnitude;
 
 	/** type of damage */
 	UPROPERTY(Category="Weapon|Instant", EditDefaultsOnly)
@@ -50,4 +61,7 @@ protected:
 
 	/** spawn trail effect */
 	void SpawnTrailEffect(const FVector& EndPoint) const;
+
+	/** aim helper trace */
+	FHitResult AimTrace(const FVector& TraceFrom, const FVector& TraceTo) const;
 };

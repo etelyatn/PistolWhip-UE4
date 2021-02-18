@@ -32,6 +32,11 @@ APistolWeapon::APistolWeapon()
 		ArrowComponent->bIsScreenSizeScaled = true;
 	}
 #endif
+
+	// defaults
+	bDebug = false;
+	MuzzleName = FName("Muzzle");
+	WeaponRange = 5000.0f;
 }
 
 void APistolWeapon::BeginPlay()
@@ -57,7 +62,7 @@ FHitResult APistolWeapon::WeaponTrace(const FVector& TraceFrom, const FVector& T
 	// Perform trace to retrieve hit info
 	FCollisionQueryParams TraceParams(SCENE_QUERY_STAT(WeaponTrace), true, this);
 	TraceParams.bReturnPhysicalMaterial = true;
-	TraceParams.bDebugQuery = true;
+	TraceParams.bDebugQuery = bDebug;
 
 	FHitResult Hit(ForceInit);
 	GetWorld()->LineTraceSingleByChannel(Hit, TraceFrom, TraceTo, COLLISION_WEAPON_TRACE, TraceParams);
