@@ -5,6 +5,7 @@
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
 #include "DrawDebugHelpers.h"
+#include "Log.h"
 #include "PistolWhipTypes.h"
 #include "Player/PlayerControllers/PistolPlayerController_FP.h"
 
@@ -42,11 +43,17 @@ APistolWeapon::APistolWeapon()
 void APistolWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// set full ammo in clip
+	if (!HasInfiniteAmmo())
+	{
+		ReloadWeapon();
+	}
 }
 
 bool APistolWeapon::CanFire() const
 {
-	return true;
+	return CurrentAmmoInClip > 0 || HasInfiniteAmmo();
 }
 
 void APistolWeapon::PlayWeaponAnimation(UAnimationAsset* Animation)
@@ -93,6 +100,21 @@ FVector APistolWeapon::GetMuzzleDirection() const
 	return MeshComponent->GetSocketRotation(MuzzleName).Vector();
 }
 
+bool APistolWeapon::HasInfiniteAmmo() const
+{
+	return WeaponData.bInfiniteAmmo;
+}
+
+int32 APistolWeapon::GetAmmoPerClip() const
+{
+	return WeaponData.AmmoPerClip;
+}
+
+int32 APistolWeapon::GetCurrentAmmoInClip() const
+{
+	return CurrentAmmoInClip;
+}
+
 FVector APistolWeapon::GetDamageStartLocation() const
 {
 	APistolPlayerController_FP* const PlayerController = OwnerPawn ? Cast<APistolPlayerController_FP>(OwnerPawn->Controller) : nullptr;
@@ -137,6 +159,30 @@ FVector APistolWeapon::GetAdjustedAim() const
 	return FinalAim;
 }
 
+void APistolWeapon::UseAmmo()
+{
+	if (!HasInfiniteAmmo())
+	{
+		CurrentAmmoInClip--;
+		NotifyAmmoUpdated(CurrentAmmoInClip);
+	}
+}
+
+bool APistolWeapon::CanReload() const
+{
+	return ( CurrentAmmoInClip < WeaponData.AmmoPerClip) && !HasInfiniteAmmo();
+}
+
+void APistolWeapon::ReloadWeapon()
+{
+	if (CanReload())
+	{
+		CurrentAmmoInClip = GetAmmoPerClip();
+		NotifyAmmoUpdated(CurrentAmmoInClip);
+		NotifyReloaded();
+	}
+}
+
 void APistolWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -149,6 +195,8 @@ void APistolWeapon::StartFire()
 		PlayWeaponAnimation(FireAnim);
 		
 		FireWeapon();
+
+		UseAmmo();
 	}
 }
 

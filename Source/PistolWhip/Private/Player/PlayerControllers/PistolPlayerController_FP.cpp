@@ -17,6 +17,7 @@ void APistolPlayerController_FP::SetupInputComponent()
 	Super::SetupInputComponent();
 
 	InputComponent->BindAction("Fire", IE_Pressed, this, &APistolPlayerController_FP::OnFire);
+	InputComponent->BindAction("Reload", IE_Pressed, this, &APistolPlayerController_FP::OnReload);
 
 	InputComponent->BindAxis("Turn", this, &APlayerController::AddYawInput);
 	InputComponent->BindAxis("LookUp", this, &APlayerController::AddPitchInput);
@@ -32,6 +33,18 @@ void APistolPlayerController_FP::OnFire()
 		if (Weapon)
 		{
 			Weapon->StartFire();
+		}
+	}
+}
+
+void APistolPlayerController_FP::OnReload()
+{
+	if (CachedPawnFP.IsValid())
+	{
+		APistolWeapon* Weapon = CachedPawnFP->GetWeapon();
+		if (Weapon)
+		{
+			Weapon->ReloadWeapon();
 		}
 	}
 }

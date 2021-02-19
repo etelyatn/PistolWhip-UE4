@@ -47,6 +47,9 @@ private:
 	/** On Fire press action */
 	void OnFire();
 
+	/** On Reload pressed action */
+	void OnReload();
+
 	/** Body movement actions */
 	void OnMoveUp(const float Val);
 	void OnMoveRight(float Val);	

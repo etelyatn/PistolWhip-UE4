@@ -6,6 +6,25 @@
 #include "GameFramework/Actor.h"
 #include "PistolWeapon.generated.h"
 
+USTRUCT()
+struct FWeaponData
+{
+	GENERATED_BODY()
+
+	/** inifite ammo for reloads */
+	UPROPERTY(EditDefaultsOnly, Category=Ammo)
+	bool bInfiniteAmmo;
+
+	/** clip size */
+	UPROPERTY(EditDefaultsOnly, Category=Ammo)
+	int32 AmmoPerClip;
+
+	FWeaponData()
+		: bInfiniteAmmo(false)
+		, AmmoPerClip(15)
+	{}
+};
+
 UCLASS(Abstract, NotBlueprintable)
 class PISTOLWHIP_API APistolWeapon : public AActor
 {
@@ -27,6 +46,26 @@ public:
 
 	/** get direction of weapon's muzzle */
 	FVector GetMuzzleDirection() const;
+
+	/** check if weapon has infinite ammo (include owner's cheats) */
+	bool HasInfiniteAmmo() const;
+
+	/** get clip size */
+	int32 GetAmmoPerClip() const;
+
+	/** get current ammo amount (clip) */
+	int32 GetCurrentAmmoInClip() const;
+	
+	/** performs actual reload */
+	virtual void ReloadWeapon();
+
+	/** Notify blueprints ammo was updated */
+	UFUNCTION(BlueprintImplementableEvent, Category=PistolWhip)
+	void NotifyAmmoUpdated(int32 NewAmmo);
+
+	/** Notify blueprints weapon was reloaded */
+	UFUNCTION(BlueprintImplementableEvent, Category=PistolWhip)
+	void NotifyReloaded();
 
 protected:
 	virtual void BeginPlay() override;
@@ -56,9 +95,16 @@ protected:
 	UPROPERTY(Category=Weapon, EditDefaultsOnly)
 	UAnimationAsset* FireAnim;
 
+	/** weapon data */
+	UPROPERTY(Category=Weapon, EditDefaultsOnly)
+	FWeaponData WeaponData;
+
 	/** range of instant weapon */
 	UPROPERTY(Category=Weapon, EditDefaultsOnly)
 	float WeaponRange;
+
+	/** current ammo - inside clip */
+	int32 CurrentAmmoInClip;
 
 #if WITH_EDITORONLY_DATA
 	/** Component shown in the editor only to indicate weapon facing */
@@ -66,6 +112,7 @@ protected:
 	class UArrowComponent* ArrowComponent;
 #endif
 
+	/** check if weapon can fire */
 	virtual bool CanFire() const;
 	
 	/** play weapon animations */
@@ -82,5 +129,11 @@ protected:
 
 	/** Get the aim of the weapon, allowing for adjustments to be made by the weapon */
 	virtual FVector GetAdjustedAim() const;
+
+	/** consume a bullet */
+	void UseAmmo();
+
+	/** check if weapon can be reloaded */
+	bool CanReload() const;
 
 };
