@@ -7,11 +7,12 @@
 #include "DrawDebugHelpers.h"
 #include "Log.h"
 #include "PistolWhipTypes.h"
+#include "Framework/PistolFunctionLibrary.h"
 #include "Player/PlayerControllers/PistolPlayerController_FP.h"
 
 APistolWeapon::APistolWeapon()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
 	SetRootComponent(SceneComponent);
@@ -183,9 +184,26 @@ void APistolWeapon::ReloadWeapon()
 	}
 }
 
+void APistolWeapon::CheckAndHandleReload()
+{
+	if (CanReload())
+	{
+		const float UpAngle = UPistolFunctionLibrary::AngleBetweenTwoVectors(GetActorUpVector(), FVector::UpVector);
+		if (UpAngle > 1.0f && GetActorRotation().Pitch < 0.0f)
+		{
+			ReloadWeapon();
+		}
+	}
+}
+
 void APistolWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (!HasInfiniteAmmo())
+	{
+		CheckAndHandleReload();
+	}
 }
 
 void APistolWeapon::StartFire()
@@ -197,6 +215,10 @@ void APistolWeapon::StartFire()
 		FireWeapon();
 
 		UseAmmo();
+	}
+	else
+	{
+		NotifyNoAmmo();
 	}
 }
 

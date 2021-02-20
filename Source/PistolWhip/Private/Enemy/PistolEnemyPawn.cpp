@@ -78,6 +78,7 @@ void APistolEnemyPawn::Death_Implementation()
 	bAlive = false;
 	Mesh->SetCollisionProfileName(FName("Ragdoll"));
 	Mesh->SetSimulatePhysics(true);
+	CapsuleComponent->SetCollisionProfileName(FName("NoCollision"));
 
 	if (Weapon)
 	{

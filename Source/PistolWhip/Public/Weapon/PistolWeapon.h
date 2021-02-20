@@ -48,16 +48,23 @@ public:
 	FVector GetMuzzleDirection() const;
 
 	/** check if weapon has infinite ammo (include owner's cheats) */
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	bool HasInfiniteAmmo() const;
 
 	/** get clip size */
+	UFUNCTION(BlueprintCallable)
 	int32 GetAmmoPerClip() const;
 
 	/** get current ammo amount (clip) */
+	UFUNCTION(BlueprintCallable)
 	int32 GetCurrentAmmoInClip() const;
 	
 	/** performs actual reload */
+	UFUNCTION(BlueprintCallable)
 	virtual void ReloadWeapon();
+
+	/** checks weapon action for reload */
+	void CheckAndHandleReload();
 
 	/** Notify blueprints ammo was updated */
 	UFUNCTION(BlueprintImplementableEvent, Category=PistolWhip)
@@ -66,6 +73,10 @@ public:
 	/** Notify blueprints weapon was reloaded */
 	UFUNCTION(BlueprintImplementableEvent, Category=PistolWhip)
 	void NotifyReloaded();
+	
+	/** Notify no ammo in the clip */
+	UFUNCTION(BlueprintImplementableEvent, Category=PistolWhip)
+	void NotifyNoAmmo();
 
 protected:
 	virtual void BeginPlay() override;
