@@ -30,11 +30,20 @@ public:
 
 protected:
 
-	/** Handle for enemy firing */
-	FTimerHandle TimerHandle_Firing;
+	/** Handle for enemy firing for the first shot */
+	FTimerHandle TimerHandle_FirstShot;
+	
+	/** Handle for enemy firing for the other shots */
+	FTimerHandle TimerHandle_OtherShots;
 
 	/** Enemy firing to player */
 	void Fire();
+
+	/** subscribed to OnPawnMovementFinished */
+	void OnMovementFinished();
+
+	/** subscribed to OnPawnMovementFinished */
+	void OnWeaponEquipped();
 
 private:
 	

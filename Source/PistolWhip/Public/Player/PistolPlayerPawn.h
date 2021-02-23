@@ -3,9 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "PistolBasePawn.h"
 #include "PistolWhipTypes.h"
 #include "Components/PistolPlayerHealthComponent.h"
-#include "GameFramework/Pawn.h"
 #include "PistolPlayerPawn.generated.h"
 
 class UCapsuleComponent;
@@ -16,7 +17,7 @@ class UPostProcessComponent;
 DECLARE_MULTICAST_DELEGATE(FOnEnemyHitDelegate)
 
 UCLASS(Abstract)
-class PISTOLWHIP_API APistolPlayerPawn : public APawn
+class PISTOLWHIP_API APistolPlayerPawn : public APistolBasePawn
 {
 	GENERATED_BODY()
 
@@ -32,9 +33,6 @@ public:
 
 	/** Get current head location */
 	FVector GetHeadLocation() const;
-
-	/** Get current movement speed along the spline track */
-	float GetMovementSpeed() const;
 
 protected:
 
@@ -84,17 +82,6 @@ protected:
 	static const FName HeadCollisionProfileName;
 	static const FName BodyCollisionProfileName;
 
-	/** should a pawn move along a spline track */
-	UPROPERTY(Category="PistolPlayer|Movement", EditDefaultsOnly)
-	bool bMoveBySplineTrack = true;
-
-	/** Pawn movement speed along a Spline track */
-	UPROPERTY(Category="PistolPlayer|Movement", EditDefaultsOnly, BlueprintReadWrite)
-	float SplineTrackSpeed = 200.0f;
-	
-	/** Distance along the spline track */
-	float TrackDistance = 0.0f;
-
 	/** Game Mode Type of current player */
 	EGameModeType GameModeType = EGameModeType::GMT_Invalid;
 
@@ -104,8 +91,6 @@ protected:
 	UArrowComponent* ArrowComponent;
 #endif
 	
-	/** Pawn movement along a spline track */
-	void MoveBySplineTrack();
 
 	UFUNCTION()
 	void OnHeadOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& OverlapInfo);

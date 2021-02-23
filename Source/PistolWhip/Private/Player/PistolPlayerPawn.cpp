@@ -82,23 +82,22 @@ FVector APistolPlayerPawn::GetHeadLocation() const
 	return HeadCapsule->GetComponentLocation();
 }
 
-float APistolPlayerPawn::GetMovementSpeed() const
-{
-	return bMoveBySplineTrack ? SplineTrackSpeed : 0.0f;
-}
-
 void APistolPlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
 	// Set Spline Track
-	if (bMoveBySplineTrack)
+	if (WantsToMove())
 	{
 		TArray<AActor*> FoundActors;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), APistolSplineTrack::StaticClass(), FoundActors);
 		if (FoundActors.Num() > 0)
 		{
 			SplineTrack = Cast<APistolSplineTrack>(FoundActors[0]);
+			if (SplineTrack)
+			{
+				SetSplineComponent(SplineTrack->GetSpline());
+			}
 		}
 	}
 
@@ -122,31 +121,11 @@ void APistolPlayerPawn::BeginPlay()
 void APistolPlayerPawn::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	if (bMoveBySplineTrack && SplineTrack)
-	{
-		MoveBySplineTrack();
-	}
 }
 
 void APistolPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-}
-
-void APistolPlayerPawn::MoveBySplineTrack()
-{
-	if (!SplineTrack || !SplineTrack->GetSpline())
-	{
-		return;
-	}
-
-	// Calculate track distance
-	TrackDistance = GetWorld()->GetDeltaSeconds() + UGameplayStatics::GetTimeSeconds(GetWorld()) * SplineTrackSpeed;
-
-	FVector NewActorLocation = SplineTrack->GetSpline()->GetWorldLocationAtDistanceAlongSpline(TrackDistance);
-	NewActorLocation.Z = GetActorLocation().Z;
-	SetActorLocation(NewActorLocation);
 }
 
 void APistolPlayerPawn::OnHeadOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& OverlapInfo)

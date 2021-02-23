@@ -11,6 +11,7 @@
 #include "PistolEnemySpawner.generated.h"
 
 class APistolEnemyPawn;
+class USplineComponent;
 
 UCLASS()
 class PISTOLWHIP_API APistolEnemySpawner : public AActor, public IPistolActivatableInterface
@@ -20,22 +21,27 @@ class PISTOLWHIP_API APistolEnemySpawner : public AActor, public IPistolActivata
 public:	
 	// Sets default values for this actor's properties
 	APistolEnemySpawner();
+	virtual void BeginPlay() override;
 
 	/** Spawn a specified Enemy */
-	void Spawn();
+	virtual void Spawn();
 
 	/** PistolActivatableInterface */
 	virtual void Activate_Implementation() override;
 
 protected:
 
+	/** is the spawner active on begin play */
+	UPROPERTY(Category=EnemySpawner, EditAnywhere)
+	bool bActiveOnBegin;
+	
 	/** enemy class for spawning */
 	UPROPERTY(Category=EnemySpawner, EditAnywhere)
 	TSubclassOf<APistolEnemyPawn> EnemyPawnClass;
 
 	/** spawned enemy configs */
 	UPROPERTY(Category=EnemySpawner, EditAnywhere)
-	FEnemyData EnemyData;
+	FEnemyData EnemyConfig;
 
 #if WITH_EDITOR
 	/** Capsule for spawner visualization */

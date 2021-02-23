@@ -3,12 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
+
+#include "Components/SplineComponent.h"
+#include "Player/PistolBasePawn.h"
 #include "Weapon/PistolWeapon.h"
 
 #include "PistolEnemyPawn.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnemyPawnHitDelegate, class APistolEnemyPawn*);
+DECLARE_MULTICAST_DELEGATE(FOnEnemyPawnWeaponEquippedDelegate)
 
 /** enemy configs */
 USTRUCT(BlueprintType)
@@ -17,12 +20,22 @@ struct FEnemyData
 	GENERATED_BODY()
 
 	/** is firing enabled for the enemy */
-	UPROPERTY(Category=EnemyData, EditAnywhere)
+	UPROPERTY(Category=EnemyConfig, EditAnywhere)
 	bool bFiringEnabled;
 
-	/** Delay between firing */
-	UPROPERTY(Category=EnemyData, EditAnywhere)
-	float FiringDelay;
+	/** Delay range for the first shot */
+	UPROPERTY(Category=EnemyConfig, EditAnywhere)
+	FVector2D FirstShotDelayRange;
+
+	/** Delay between other shots */
+	UPROPERTY(Category=EnemyConfig, EditAnywhere)
+	FVector2D OtherShotsDelayRange;
+
+	UPROPERTY(Category=EnemyConfig, EditAnywhere)
+	EPawnMovementType MovementType;
+
+	UPROPERTY()
+	USplineComponent* SplineComponent;
 
 	/** the weapon will be added to the enemy */
 	UPROPERTY(Category=EnemyData, EditAnywhere)
@@ -30,12 +43,16 @@ struct FEnemyData
 
 	FEnemyData()
 		: bFiringEnabled(true)
-		, FiringDelay(2.0f)
-	{}
+		  , FirstShotDelayRange(FVector2D(0.5f, 1.0f))
+		  , OtherShotsDelayRange(FVector2D(2.0f, 4.0f))
+		  , MovementType(EPawnMovementType::PMT_Idle)
+	      , SplineComponent(nullptr)
+	{
+	}
 };
 
 UCLASS()
-class PISTOLWHIP_API APistolEnemyPawn : public APawn
+class PISTOLWHIP_API APistolEnemyPawn : public APistolBasePawn
 {
 	GENERATED_BODY()
 
@@ -46,24 +63,27 @@ public:
 
 	FORCEINLINE USkeletalMeshComponent* GetMesh() const { return Mesh; }
 	FORCEINLINE APistolWeapon* GetWeapon() const { return Weapon; }
-	FORCEINLINE void SetEnemyData(FEnemyData& InEnemyData) { EnemyData = InEnemyData; }
-	FORCEINLINE FEnemyData& GetEnemyData() { return EnemyData; }
+
+	FORCEINLINE FEnemyData& GetEnemyConfig() { return EnemyConfig; }
+
+	/** Set all enemy configs */
+	void InitEnemyConfig(FEnemyData& InEnemyConfig);
+
+	/** checks is firing enabled for the enemy */
+	UFUNCTION(BlueprintCallable)
+	bool IsFiringEnabled() const;
 
 	/** Global notification when an enemy was hit */
 	static FOnEnemyPawnHitDelegate OnHit;
 
-	/** check if pawn is still alive */
-	bool IsAlive() const;
+	/** notification when an enemy equips a weapon */
+	FOnEnemyPawnWeaponEquippedDelegate OnWeaponEquipped;
 
 protected:
 
 	/** enemy settings */
 	UPROPERTY(Category=EnemyPawn, EditAnywhere)
-	FEnemyData EnemyData;
-
-	/** Pawn living state */
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite)
-	bool bAlive;
+	FEnemyData EnemyConfig;
 
 	/** Delay between pawn destroy */
 	UPROPERTY(Category=EnemyPawn, EditDefaultsOnly)
@@ -79,9 +99,10 @@ protected:
 	UFUNCTION(BlueprintNativeEvent)
 	void Death();
 
+	/** Destroy enemy instance */
 	void DestroyEnemy();
 
-	/** equip the weapon specified in enemy data */
+	/** equip the weapon specified in enemy data. called from blueprint */
 	UFUNCTION(BlueprintCallable)
 	void EquipWeapon();
 

@@ -16,9 +16,12 @@ void APistolEnemyAIController::SetPawn(APawn* InPawn)
 	Super::SetPawn(InPawn);
 
 	CachedEnemyPawn = Cast<APistolEnemyPawn>(InPawn);
-
-	// init the enemy firing timer 
-	InitFiring();
+	if (CachedEnemyPawn.IsValid())
+	{
+		// subscribe on delegates
+		CachedEnemyPawn->OnPawnMovementFinished.AddUObject(this, &APistolEnemyAIController::OnMovementFinished);
+		CachedEnemyPawn->OnWeaponEquipped.AddUObject(this, &APistolEnemyAIController::OnWeaponEquipped);
+	}
 }
 
 void APistolEnemyAIController::BeginPlay()
@@ -34,8 +37,18 @@ void APistolEnemyAIController::UpdateControlRotation(float DeltaTime, bool bUpda
 	{
 		return;
 	}
-	
-	const FRotator NewControlRotation = UKismetMathLibrary::FindLookAtRotation(CachedEnemyPawn->GetActorLocation(), CachedPlayerPawn->GetActorLocation());
+
+	FRotator NewControlRotation;
+	if (CachedEnemyPawn->GetMovementType() == EPawnMovementType::PMT_Idle)
+	{
+		// look at the player
+		NewControlRotation = UKismetMathLibrary::FindLookAtRotation(CachedEnemyPawn->GetActorLocation(), CachedPlayerPawn->GetActorLocation());
+	}
+	else
+	{
+		NewControlRotation = CachedEnemyPawn->GetCurrentSplineRotation();
+	}
+
 	SetControlRotation(NewControlRotation);
 
 	if (bUpdatePawn)
@@ -46,9 +59,10 @@ void APistolEnemyAIController::UpdateControlRotation(float DeltaTime, bool bUpda
 
 void APistolEnemyAIController::InitFiring()
 {
-	if (CachedEnemyPawn.IsValid())
+	if (CachedEnemyPawn.IsValid() && CachedEnemyPawn->IsFiringEnabled())
 	{
-		GetWorldTimerManager().SetTimer(TimerHandle_Firing, this, &APistolEnemyAIController::Fire, CachedEnemyPawn->GetEnemyData().FiringDelay, true);
+		const float FiringDelay = FMath::RandRange(CachedEnemyPawn->GetEnemyConfig().FirstShotDelayRange.X, CachedEnemyPawn->GetEnemyConfig().FirstShotDelayRange.X);
+		GetWorldTimerManager().SetTimer(TimerHandle_FirstShot, this, &APistolEnemyAIController::Fire, FiringDelay, false);
 	}
 }
 
@@ -60,7 +74,7 @@ void APistolEnemyAIController::Fire()
 	}
 
 	APistolWeapon_Projectile* Weapon = Cast<APistolWeapon_Projectile>(CachedEnemyPawn->GetWeapon());
-	if (Weapon && CachedEnemyPawn->IsAlive() && CachedEnemyPawn->GetEnemyData().bFiringEnabled)
+	if (Weapon && CachedEnemyPawn->IsAlive() && CachedEnemyPawn->GetEnemyConfig().bFiringEnabled)
 	{
 		/** Predict the player's head position when a projectile reach the head */
 		float GoalReachTime = Weapon->GetGoalReachTime();
@@ -97,5 +111,24 @@ void APistolEnemyAIController::Fire()
 				Weapon->StartFire();
 			}
 		}
+
+		// set other shots
+		const float FiringDelay = FMath::RandRange(CachedEnemyPawn->GetEnemyConfig().OtherShotsDelayRange.X, CachedEnemyPawn->GetEnemyConfig().OtherShotsDelayRange.X);
+		GetWorldTimerManager().SetTimer(TimerHandle_OtherShots, this, &APistolEnemyAIController::Fire, FiringDelay, true);
+	}
+}
+
+void APistolEnemyAIController::OnMovementFinished()
+{
+	// init the enemy firing timer
+	InitFiring();
+}
+
+void APistolEnemyAIController::OnWeaponEquipped()
+{
+	// init firing from start for not movable enemies
+	if (CachedEnemyPawn.IsValid() && CachedEnemyPawn->GetMovementType() == EPawnMovementType::PMT_Idle && CachedEnemyPawn->IsFiringEnabled())
+	{
+		InitFiring();
 	}
 }

@@ -13,7 +13,7 @@ FOnEnemyPawnHitDelegate APistolEnemyPawn::OnHit;
 
 APistolEnemyPawn::APistolEnemyPawn()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(FName("Capsule"));
 	CapsuleComponent->InitCapsuleSize(34.0f, 88.0f);
@@ -68,6 +68,22 @@ float APistolEnemyPawn::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	return DamageAmount;
 }
 
+void APistolEnemyPawn::InitEnemyConfig(FEnemyData& InEnemyConfig)
+{
+	EnemyConfig = InEnemyConfig;
+
+	SetMovementType(EnemyConfig.MovementType);
+	if (EnemyConfig.SplineComponent)
+	{
+		SetSplineComponent(EnemyConfig.SplineComponent);
+	}
+}
+
+bool APistolEnemyPawn::IsFiringEnabled() const
+{
+	return EnemyConfig.bFiringEnabled;
+}
+
 void APistolEnemyPawn::BeginPlay()
 {
 	Super::BeginPlay();
@@ -95,20 +111,21 @@ void APistolEnemyPawn::DestroyEnemy()
 
 void APistolEnemyPawn::EquipWeapon()
 {
-	if (GetWorld() && EnemyData.WeaponClass && bAlive)
+	if (GetWorld() && EnemyConfig.WeaponClass && bAlive)
 	{
-		Weapon = GetWorld()->SpawnActor<APistolWeapon>(EnemyData.WeaponClass);
+		Weapon = GetWorld()->SpawnActor<APistolWeapon>(EnemyConfig.WeaponClass);
 		if (Weapon)
 		{
 			Weapon->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocketName);
 			Weapon->SetOwningPawn(this);			
 			Weapon->SetActorRelativeLocation(FVector(0.0f, 2.0f, 3.0f));
 			Weapon->SetActorRelativeRotation(FRotator(30.0f, -180.0f, 2.0f));
+
+			// delegate
+			if (OnWeaponEquipped.IsBound())
+			{
+				OnWeaponEquipped.Broadcast();
+			}
 		}
 	}
-}
-
-bool APistolEnemyPawn::IsAlive() const
-{
-	return bAlive;
 }

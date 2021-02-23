@@ -6,8 +6,6 @@
 #include "Components/BillboardComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "Player/PistolPlayerPawn.h"
 #include "Enemy/PistolEnemyPawn.h"
 
 // Sets default values
@@ -29,15 +27,37 @@ APistolEnemySpawner::APistolEnemySpawner()
 	
 #endif
 
+	// defaults
+	bActiveOnBegin = false;
+
+}
+
+void APistolEnemySpawner::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// auto activation
+	if (bActiveOnBegin)
+	{
+		Activate_Implementation();
+	}
 }
 
 void APistolEnemySpawner::Spawn()
 {
 	if (GetWorld() && IsValid(EnemyPawnClass))
 	{
-		const FRotator EnemyRotation = FRotator::ZeroRotator;
-		APistolEnemyPawn* NewEnemy = GetWorld()->SpawnActor<APistolEnemyPawn>(EnemyPawnClass, GetActorLocation(), EnemyRotation);
-		NewEnemy->SetEnemyData(EnemyData);
+		// const FRotator EnemyRotation = FRotator::ZeroRotator;
+		// APistolEnemyPawn* NewEnemy = GetWorld()->SpawnActor<APistolEnemyPawn>(EnemyPawnClass, GetActorLocation(), EnemyRotation);
+
+		APistolEnemyPawn* NewEnemy = Cast<APistolEnemyPawn>(UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), EnemyPawnClass, GetActorTransform()));
+		if (NewEnemy)
+		{
+			NewEnemy->InitEnemyConfig(EnemyConfig);
+
+			UGameplayStatics::FinishSpawningActor(NewEnemy, GetActorTransform());
+		}
+
 	}
 }
 
