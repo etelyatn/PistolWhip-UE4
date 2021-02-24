@@ -17,7 +17,7 @@ class PISTOLWHIP_API APistolHandController : public AActor
 	
 public:	
 	APistolHandController();
-
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
 	// Set Tracking Source hand
@@ -35,8 +35,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetOwningPawn(APawn* NewOwner);
 
+	/** Play haptic feedback effect on the motion controller */
+	UFUNCTION(BlueprintCallable)
+    void PlayHapticFeedback(UHapticFeedbackEffect_Base* HapticFeedback, float Scale = 1) const;
+
 protected:
-	virtual void BeginPlay() override;
 
 	UPROPERTY()
 	APawn* OwnerPawn;

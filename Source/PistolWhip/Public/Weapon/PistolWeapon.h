@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "PistolWeapon.generated.h"
 
+class USoundBase;
+class APistolHandController;
+
 USTRUCT()
 struct FWeaponData
 {
@@ -70,19 +73,15 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category=PistolWhip)
 	void NotifyAmmoUpdated(int32 NewAmmo);
 
-	/** Notify blueprints weapon was reloaded */
-	UFUNCTION(BlueprintImplementableEvent, Category=PistolWhip)
-	void NotifyReloaded();
-	
-	/** Notify no ammo in the clip */
-	UFUNCTION(BlueprintImplementableEvent, Category=PistolWhip)
-	void NotifyNoAmmo();
-
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY()
 	APawn* OwnerPawn;
+
+	/** the hand controller to which the weapon is attached */
+	UPROPERTY()
+	APistolHandController* OwnerHandController;
 		
 	/** Enable debug mode */
 	UPROPERTY(Category=Weapon, EditAnywhere)
@@ -113,6 +112,20 @@ protected:
 	/** range of instant weapon */
 	UPROPERTY(Category=Weapon, EditDefaultsOnly)
 	float WeaponRange;
+		
+	/** fire haptic feedback for motion controller */
+	UPROPERTY(Category="Weapon|Feedbacks", EditDefaultsOnly)
+	UHapticFeedbackEffect_Base* FireHapticFeedback;
+	
+	/** reload weapon haptic feedback for motion controller */
+	UPROPERTY(Category="Weapon|Feedbacks", EditDefaultsOnly)
+	UHapticFeedbackEffect_Base* ReloadHapticFeedback;
+
+	UPROPERTY(Category="Weapon|Sounds", EditDefaultsOnly)
+	USoundBase* NoAmmoSound;
+
+	UPROPERTY(Category="Weapon|Sounds", EditDefaultsOnly)
+	USoundBase* ReloadSound;
 
 	/** current ammo - inside clip */
 	int32 CurrentAmmoInClip;
@@ -128,6 +141,12 @@ protected:
 	
 	/** play weapon animations */
 	void PlayWeaponAnimation(UAnimationAsset* Animation);
+
+	/** play motion controller haptic feedback */
+	void PlayHapticFeedback(UHapticFeedbackEffect_Base* HapticFeedback, float Scale = 1);
+
+	/** play weapon sound cue */
+	void PlayWeaponSound(USoundBase* SoundToPlay, float Volume = 1) const;
 
 	/** find hit */
 	FHitResult WeaponTrace(const FVector& TraceFrom, const FVector& TraceTo) const;

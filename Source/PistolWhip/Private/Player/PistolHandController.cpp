@@ -3,6 +3,7 @@
 
 #include "Player/PistolHandController.h"
 #include "Weapon/PistolWeapon.h"
+#include "GameFramework/PlayerController.h"
 
 APistolHandController::APistolHandController()
 {
@@ -43,6 +44,18 @@ void APistolHandController::SetOwningPawn(APawn* NewOwner)
 void APistolHandController::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void APistolHandController::PlayHapticFeedback(UHapticFeedbackEffect_Base* HapticFeedback, const float Scale) const
+{
+	if (OwnerPawn && MotionController && HapticFeedback)
+	{
+		APlayerController* PC = Cast<APlayerController>(OwnerPawn->GetController());
+		if (PC)
+		{
+			PC->PlayHapticEffect(HapticFeedback, MotionController->GetTrackingSource(), Scale);
+		}
+	}
 }
 
 void APistolHandController::Tick(float DeltaTime)

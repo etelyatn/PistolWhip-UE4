@@ -8,6 +8,8 @@
 #include "Log.h"
 #include "PistolWhipTypes.h"
 #include "Framework/PistolFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Player/PistolHandController.h"
 #include "Player/PlayerControllers/PistolPlayerController_FP.h"
 
 APistolWeapon::APistolWeapon()
@@ -62,6 +64,26 @@ void APistolWeapon::PlayWeaponAnimation(UAnimationAsset* Animation)
 	if (IsValid(MeshComponent) && IsValid(Animation))
 	{
 		MeshComponent->PlayAnimation(Animation, false);
+	}
+}
+
+void APistolWeapon::PlayHapticFeedback(UHapticFeedbackEffect_Base* HapticFeedback, float Scale)
+{
+	if (HapticFeedback)
+	{
+		OwnerHandController = Cast<APistolHandController>(GetAttachParentActor());
+		if (OwnerHandController)
+		{
+			OwnerHandController->PlayHapticFeedback(HapticFeedback, Scale);
+		}
+	}
+}
+
+void APistolWeapon::PlayWeaponSound(USoundBase* SoundToPlay, const float Volume) const
+{
+	if (SoundToPlay)
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), SoundToPlay, Volume);
 	}
 }
 
@@ -179,8 +201,9 @@ void APistolWeapon::ReloadWeapon()
 	if (CanReload())
 	{
 		CurrentAmmoInClip = GetAmmoPerClip();
+		PlayHapticFeedback(ReloadHapticFeedback);
+		PlayWeaponSound(ReloadSound);
 		NotifyAmmoUpdated(CurrentAmmoInClip);
-		NotifyReloaded();
 	}
 }
 
@@ -211,6 +234,7 @@ void APistolWeapon::StartFire()
 	if (CanFire())
 	{
 		PlayWeaponAnimation(FireAnim);
+		PlayHapticFeedback(FireHapticFeedback);
 		
 		FireWeapon();
 
@@ -218,7 +242,8 @@ void APistolWeapon::StartFire()
 	}
 	else
 	{
-		NotifyNoAmmo();
+		PlayHapticFeedback(FireHapticFeedback, 0.3f);
+		PlayWeaponSound(NoAmmoSound);
 	}
 }
 
