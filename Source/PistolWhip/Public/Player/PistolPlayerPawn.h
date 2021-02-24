@@ -40,6 +40,10 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+//----------------------------------------------------------------------------------------------------------------------
+// Components
+//----------------------------------------------------------------------------------------------------------------------
+
 	/** The CapsuleComponent being used for movement collision. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UCapsuleComponent* CapsuleComponent;
@@ -57,16 +61,25 @@ protected:
 	class UPostProcessComponent* PostProcessComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	class UWidgetComponent* CameraWidget;
+	class UWidgetComponent* CameraWidgetComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class UWidgetComponent* InterfaceWidgetComponent;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 	class UPistolPlayerHealthComponent* HealthComponent;
+	
+#if WITH_EDITORONLY_DATA
+	/** Component shown in the editor only to indicate character facing */
+	UPROPERTY()
+	UArrowComponent* ArrowComponent;
+#endif
 
-	/** spline track for pawn movement */
-	UPROPERTY(BlueprintReadWrite)
-	class APistolSplineTrack* SplineTrack;
+//----------------------------------------------------------------------------------------------------------------------
+// Configs
+//----------------------------------------------------------------------------------------------------------------------
 
-	UPROPERTY(Category=PistolPlayer, EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(Category="PistolPlayer", EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<class APistolWeapon> WeaponClass;
 
 	UPROPERTY(Category="PistolPlayer|Health", EditDefaultsOnly, BlueprintReadOnly)
@@ -78,25 +91,44 @@ protected:
 	UPROPERTY(Category="PistolPlayer|Health", EditDefaultsOnly, BlueprintReadOnly)
 	FPlayerShieldData ShieldData;
 
+//----------------------------------------------------------------------------------------------------------------------
+// Variables
+//----------------------------------------------------------------------------------------------------------------------
+		
 	/** collision names */
 	static const FName HeadCollisionProfileName;
 	static const FName BodyCollisionProfileName;
+	
+	/** spline track for pawn movement */
+	UPROPERTY(BlueprintReadWrite)
+	class APistolSplineTrack* SplineTrack;
 
+	/** Player interface widget instance */
+	UPROPERTY(BlueprintReadWrite)
+	class UPistolPlayerInterfaceWidget* InterfaceWidget;
+	
 	/** Game Mode Type of current player */
 	EGameModeType GameModeType = EGameModeType::GMT_Invalid;
 
-#if WITH_EDITORONLY_DATA
-	/** Component shown in the editor only to indicate character facing */
-	UPROPERTY()
-	UArrowComponent* ArrowComponent;
-#endif
-	
+//----------------------------------------------------------------------------------------------------------------------
+// Events & Delegates
+//----------------------------------------------------------------------------------------------------------------------
 
+	/** Subscribed OnOverlap event on HeadCapsule */
 	UFUNCTION()
 	void OnHeadOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& OverlapInfo);
 
-private:
+	/** Subscribed to OnShieldDestroyedDelegate */
+	void OnShieldDestroyed(int8 RestoreHits) const;
 
+	/** Subscribed to OnShieldRestoreDelegate */
+	void OnShieldRestoreProgress(int8 CurrentHits) const;
+
+	/** Subscribed to OnShieldFullyRestoredDelegate */
+	void OnShieldFullyRestored() const;
+
+	
+private:
 	
 	TWeakObjectPtr<AActor> PreviousOverlappedActor;
 };

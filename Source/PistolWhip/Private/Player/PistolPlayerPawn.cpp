@@ -12,8 +12,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Gameplay/PistolSplineTrack.h"
 #include "Weapon/PistolProjectile.h"
-#include "Weapon/PistolWeapon_Instant.h"
 #include "Enemy/PistolEnemyPawn.h"
+#include "Player/Widgets/PistolPlayerInterfaceWidget.h"
 
 
 const FName APistolPlayerPawn::HeadCollisionProfileName(TEXT("PlayerHead"));
@@ -42,18 +42,28 @@ APistolPlayerPawn::APistolPlayerPawn()
 	PostProcessComponent = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PostProcessComponent"));
 	PostProcessComponent->SetupAttachment(GetRootComponent());
 	
-	CameraWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("CameraWidget"));
-	CameraWidget->SetupAttachment(Camera);
-	CameraWidget->SetDrawSize(FVector2D(1000.f, 1000.f));
-	CameraWidget->SetPivot(FVector2D(1.0f, 1.0f));
-	CameraWidget->SetDrawAtDesiredSize(true);
-	CameraWidget->SetGenerateOverlapEvents(false);
-	CameraWidget->SetHiddenInGame(true);
-	CameraWidget->SetRelativeLocation(FVector(1000.0f, 500.0f, -500.0f));
-	CameraWidget->SetRelativeRotation(FRotator(180.0f, 0.0f, 0.0f));
-	CameraWidget->SetBlendMode(EWidgetBlendMode::Transparent);
-	CameraWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	CameraWidget->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
+	CameraWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("CameraWidgetComponent"));
+	CameraWidgetComponent->SetupAttachment(Camera);
+	CameraWidgetComponent->SetDrawAtDesiredSize(true);
+	CameraWidgetComponent->SetGenerateOverlapEvents(false);
+	CameraWidgetComponent->SetHiddenInGame(true);
+	CameraWidgetComponent->SetRelativeLocation(FVector(150.0f, 0.0f, 0.0f));
+	CameraWidgetComponent->SetRelativeRotation(FRotator(180.0f, 0.0f, 0.0f));
+	CameraWidgetComponent->SetRelativeScale3D(FVector(0.15f));
+	CameraWidgetComponent->SetBlendMode(EWidgetBlendMode::Transparent);
+	CameraWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CameraWidgetComponent->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
+	
+	InterfaceWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("InterfaceWidgetComponent"));
+	InterfaceWidgetComponent->SetupAttachment(Camera);
+	InterfaceWidgetComponent->SetDrawAtDesiredSize(true);
+	InterfaceWidgetComponent->SetGenerateOverlapEvents(false);
+	InterfaceWidgetComponent->SetRelativeLocation(FVector(150.0f, 10.0f, -50.0f));
+	InterfaceWidgetComponent->SetRelativeRotation(FRotator(180.0f, 0.0f, 0.0f));
+	InterfaceWidgetComponent->SetRelativeScale3D(FVector(0.1f));
+	InterfaceWidgetComponent->SetBlendMode(EWidgetBlendMode::Transparent);
+	InterfaceWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	InterfaceWidgetComponent->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 
 #if WITH_EDITORONLY_DATA
 	ArrowComponent = CreateEditorOnlyDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
@@ -114,13 +124,28 @@ void APistolPlayerPawn::BeginPlay()
 		UE_LOG(LogPistolWhip, Log, TEXT("APistolPlayerPawn::BeginPlay() - HealthComponentClass is not set!"))
 	}
 
+	// cache interface widget
+	if (InterfaceWidgetComponent->GetWidget())
+	{
+		InterfaceWidget = Cast<UPistolPlayerInterfaceWidget>(InterfaceWidgetComponent->GetWidget());
+	}
+
 	// subscribe on events
 	HeadCapsule->OnComponentBeginOverlap.AddDynamic(this, &APistolPlayerPawn::OnHeadOverlap);
+	HealthComponent->OnShieldDestroyed.AddUObject(this, &APistolPlayerPawn::OnShieldDestroyed);
+	HealthComponent->OnShieldRestoreProgress.AddUObject(this, &APistolPlayerPawn::OnShieldRestoreProgress);
+	HealthComponent->OnShieldFullyRestored.AddUObject(this, &APistolPlayerPawn::OnShieldFullyRestored);
 }
 
 void APistolPlayerPawn::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+
+	// update spline track progress UI
+	if (InterfaceWidget)
+	{
+		InterfaceWidget->UpdateProgressBar(CurrentTrackDistance, SplineLength);
+	}
 }
 
 void APistolPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -145,5 +170,29 @@ void APistolPlayerPawn::OnHeadOverlap(UPrimitiveComponent* OverlappedComp, AActo
 
 		PreviousOverlappedActor = OtherActor;
 		HealthComponent->TakeDamage(1.0f);
+	}
+}
+
+void APistolPlayerPawn::OnShieldDestroyed(const int8 RestoreHits) const
+{
+	if (InterfaceWidget)
+	{
+		InterfaceWidget->ShieldDestroyed(RestoreHits);
+	}
+}
+
+void APistolPlayerPawn::OnShieldRestoreProgress(const int8 CurrentHits) const
+{
+	if (InterfaceWidget)
+	{
+		InterfaceWidget->ShieldRestore(CurrentHits);
+	}
+}
+
+void APistolPlayerPawn::OnShieldFullyRestored() const
+{
+	if (InterfaceWidget)
+	{
+		InterfaceWidget->ShieldFullyRestored();
 	}
 }

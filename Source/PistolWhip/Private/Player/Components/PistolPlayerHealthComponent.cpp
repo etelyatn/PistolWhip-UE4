@@ -91,7 +91,7 @@ void UPistolPlayerHealthComponent::DestroyShield()
 	
 	if (OnShieldDestroyed.IsBound())
 	{
-		OnShieldDestroyed.Broadcast();
+		OnShieldDestroyed.Broadcast(ShieldData.RestoreHits);
 	}
 	
 	NotifyShieldDestroyed();
@@ -101,9 +101,9 @@ void UPistolPlayerHealthComponent::ShieldFullyRestored()
 {
 	ShieldData.ResetShield();
 
-	if (OnShieldRestored.IsBound())
+	if (OnShieldFullyRestored.IsBound())
 	{
-		OnShieldRestored.Broadcast();
+		OnShieldFullyRestored.Broadcast();
 	}
 
 	NotifyShieldFullyRestored();
@@ -114,6 +114,11 @@ void UPistolPlayerHealthComponent::RestoreShield(const int Hits)
 	if (HealthData.bAlive && ShieldData.bActive && ShieldData.bDestroyed)
 	{
 		ShieldData.CurrentHits += Hits;
+
+		if (OnShieldRestoreProgress.IsBound())
+		{
+			OnShieldDestroyed.Broadcast(ShieldData.CurrentHits);
+		}
 
 		if (ShieldData.CurrentHits >= ShieldData.RestoreHits)
 		{

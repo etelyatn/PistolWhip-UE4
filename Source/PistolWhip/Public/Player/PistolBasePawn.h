@@ -31,7 +31,8 @@ public:
 	FORCEINLINE void SetMovementType(const EPawnMovementType InMovementType) { MovementType = InMovementType; }
     FORCEINLINE EPawnMovementType GetMovementType() const { return MovementType; }
 	
-	FORCEINLINE void SetSplineComponent(USplineComponent* InSplineComponent) { SplineComponent = InSplineComponent; }
+	void SetSplineComponent(USplineComponent* InSplineComponent);
+	
 	FORCEINLINE USplineComponent* GetSplineComponent() const { return SplineComponent; }
 
 	/** Fires when pawn movement by spline is finished */
@@ -70,6 +71,9 @@ protected:
 	/** Pawn movement speed along a Spline track */
 	UPROPERTY(Category=PistolPawn, EditAnywhere, BlueprintReadWrite)
 	float SplineMovementSpeed;
+
+	/** Length of the Spline Track */
+	float SplineLength;
 	
 	/** Distance along the spline track */
 	float CurrentTrackDistance;

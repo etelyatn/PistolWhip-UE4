@@ -11,8 +11,9 @@ class APistolPlayerPawn;
 class APistolEnemyPawn;
 
 DECLARE_MULTICAST_DELEGATE(FOnPlayerDeathDelegate);
-DECLARE_MULTICAST_DELEGATE(FOnShieldDestroyedDelegate);
-DECLARE_MULTICAST_DELEGATE(FOnShieldRestoredDelegate);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnShieldDestroyedDelegate, int8);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnShieldRestoreProgressDelegate, int8);
+DECLARE_MULTICAST_DELEGATE(FOnShieldFullyRestoredDelegate);
 
 /** storing shield information */
 USTRUCT(BlueprintType)
@@ -133,8 +134,11 @@ public:
 	/** fired when the shield was destroyed */
 	FOnShieldDestroyedDelegate OnShieldDestroyed;
 
-	/** fired when the shield was restored */
-	FOnShieldRestoredDelegate OnShieldRestored;
+	/** fired on the shield restore progress */
+	FOnShieldRestoreProgressDelegate OnShieldRestoreProgress;
+
+	/** fired when the shield is fully restored */
+	FOnShieldFullyRestoredDelegate OnShieldFullyRestored;
 
 	/** Health component register a damage */
 	UFUNCTION(BlueprintCallable)
@@ -200,9 +204,6 @@ protected:
 	void SetDamageOverlayVisibility(float Value);
 
 private:
-
-	/** Handle for enemy firing */
-	FTimerHandle TimerHandle_ShieldRecharging;
 
 	/** On enemy hit handler */
 	void OnEnemyPawnHit(APistolEnemyPawn* EnemyPawn);

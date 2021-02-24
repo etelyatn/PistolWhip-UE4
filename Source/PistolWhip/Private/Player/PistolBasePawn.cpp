@@ -20,6 +20,7 @@ APistolBasePawn::APistolBasePawn()
 	MovementType = EPawnMovementType::PMT_Idle;
 	bAlive = true;
 	StartTimeSeconds = 0.0f;
+	SplineLength = 0.0f;
 }
 
 // Called when the game starts or when spawned
@@ -38,6 +39,16 @@ void APistolBasePawn::Tick(float DeltaTime)
 	if (CanMove())
 	{
 		MoveBySpline();
+	}
+}
+
+void APistolBasePawn::SetSplineComponent(USplineComponent* InSplineComponent)
+{
+	SplineComponent = InSplineComponent;
+
+	if (SplineComponent)
+	{
+		SplineLength = SplineComponent->GetSplineLength();
 	}
 }
 
@@ -85,7 +96,7 @@ void APistolBasePawn::MoveBySpline()
 		SetActorLocation(NewActorLocation);
 
 		// finish spline movement
-		if (CurrentTrackDistance >= SplineComponent->GetSplineLength())
+		if (CurrentTrackDistance >= SplineLength)
 		{
 			FinishSplineMovement();
 		}
