@@ -1,7 +1,7 @@
 // 2021 github.com/EugeneTel/PistolWhip-UE4
 
 
-#include "Player/Widgets/PistolPlayerInterfaceWidget.h"
+#include "UI/Widgets/PistolPlayerInterfaceWidget.h"
 
 #include "Log.h"
 #include "Components/TextBlock.h"

@@ -10,7 +10,8 @@
 
 #include "PistolEnemyPawn.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnemyPawnHitDelegate, class APistolEnemyPawn*);
+class APistolEnemyPawn;
+
 DECLARE_MULTICAST_DELEGATE(FOnEnemyPawnWeaponEquippedDelegate)
 
 /** enemy configs */
@@ -31,6 +32,10 @@ struct FEnemyData
 	UPROPERTY(Category=EnemyConfig, EditAnywhere)
 	FVector2D OtherShotsDelayRange;
 
+	/** Minimum and maximum score player get */
+	UPROPERTY(Category=EnemyConfig, EditAnywhere)
+	FIntPoint ScoreRange;
+	
 	UPROPERTY(Category=EnemyConfig, EditAnywhere)
 	EPawnMovementType MovementType;
 
@@ -45,8 +50,42 @@ struct FEnemyData
 		: bFiringEnabled(true)
 		  , FirstShotDelayRange(FVector2D(0.5f, 1.0f))
 		  , OtherShotsDelayRange(FVector2D(2.0f, 4.0f))
+		  , ScoreRange(FIntPoint(10, 100))
 		  , MovementType(EPawnMovementType::PMT_Idle)
 	      , SplineComponent(nullptr)
+	{
+	}
+};
+
+
+/** On Enemy Hit uses for calculations (ex. score) */
+USTRUCT()
+struct FEnemyHit
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	bool bBlockingHit;
+
+	UPROPERTY()
+	FVector ShootStart;
+
+	UPROPERTY()
+	FVector ShootDir;
+
+	UPROPERTY()
+	FVector ImpactPoint;
+
+	UPROPERTY()
+	APistolEnemyPawn* EnemyPawn;
+
+	UPROPERTY()
+	APistolWeapon* Weapon;
+
+	FEnemyHit()
+        : bBlockingHit(false)
+          , EnemyPawn(nullptr)
+          , Weapon(nullptr)
 	{
 	}
 };
@@ -73,8 +112,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsFiringEnabled() const;
 
-	/** Global notification when an enemy was hit */
-	static FOnEnemyPawnHitDelegate OnHit;
+	/** notify BP */
+	UFUNCTION(BlueprintImplementableEvent)
+	void NotifyEnemyHit(const int32 HitScore);
 
 	/** notification when an enemy equips a weapon */
 	FOnEnemyPawnWeaponEquippedDelegate OnWeaponEquipped;

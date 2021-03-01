@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "Player/PistolPlayerState.h"
 #include "Weapon/PistolWeapon.h"
 #include "PistolWeapon_Instant.generated.h"
 
@@ -16,6 +18,8 @@ class PISTOLWHIP_API APistolWeapon_Instant : public APistolWeapon
 
 public:
 	APistolWeapon_Instant();
+
+	FORCEINLINE float GetAimRadius() const { return AimRadius; }
 
 protected:
 
@@ -64,4 +68,9 @@ protected:
 
 	/** aim helper trace */
 	FHitResult AimTrace(const FVector& TraceFrom, const FVector& TraceTo) const;
+
+private:
+
+	// cached player state
+	TWeakObjectPtr<APistolPlayerState> PlayerState;
 };

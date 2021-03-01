@@ -4,6 +4,7 @@
 #include "Player/PistolPlayerPawn_FP.h"
 
 #include "Camera/CameraComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Player/PistolHandController.h"
 #include "Weapon/PistolWeapon.h"
 
@@ -31,13 +32,16 @@ void APistolPlayerPawn_FP::EquipWeapon()
 {
 	if (GetWorld() && WeaponClass)
 	{
-		Weapon = GetWorld()->SpawnActor<APistolWeapon>(WeaponClass);
+		// spawn weapon
+		Weapon = Cast<APistolWeapon>(UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), WeaponClass, FTransform()));
 		if (Weapon)
 		{
 			Weapon->AttachToComponent(Camera, FAttachmentTransformRules::SnapToTargetIncludingScale);
-			Weapon->SetOwningPawn(this);
+			Weapon->EquippedBy(this);
 			Weapon->SetActorRelativeLocation(FVector(55.0f, 27.0f, -17.0f));
 			Weapon->SetActorRelativeRotation(FRotator(35.0f, -10.0f, -1.0f));
+
+			UGameplayStatics::FinishSpawningActor(Weapon, FTransform());
 		}
 	}
 }

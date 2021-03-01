@@ -4,6 +4,7 @@
 #include "Player/PistolHandController.h"
 #include "Weapon/PistolWeapon.h"
 #include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
 
 APistolHandController::APistolHandController()
 {
@@ -18,11 +19,13 @@ void APistolHandController::EquipWeapon(TSubclassOf<APistolWeapon> WeaponClass)
 {
 	if (WeaponClass)
 	{
-		Weapon = GetWorld()->SpawnActor<APistolWeapon>(WeaponClass);
+		Weapon = Cast<APistolWeapon>(UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), WeaponClass, FTransform()));
 		if (Weapon)
 		{
 			Weapon->AttachToComponent(MotionController, FAttachmentTransformRules::SnapToTargetIncludingScale);
-			Weapon->SetOwningPawn(OwnerPawn);
+			Weapon->EquippedBy(OwnerPawn);
+
+			UGameplayStatics::FinishSpawningActor(Weapon, FTransform());
 		}
 	}
 }
@@ -35,7 +38,7 @@ void APistolHandController::Fire()
 	}
 }
 
-void APistolHandController::SetOwningPawn(APawn* NewOwner)
+void APistolHandController::SetOwningPawn(APistolBasePawn* NewOwner)
 {
 	SetOwner(NewOwner);
 	OwnerPawn = NewOwner;

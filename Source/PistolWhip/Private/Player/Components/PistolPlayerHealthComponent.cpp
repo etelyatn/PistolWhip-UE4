@@ -9,6 +9,7 @@
 #include "Enemy/PistolEnemyPawn.h"
 #include "Player/PistolPlayerPawn.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "Player/PistolPlayerState.h"
 
 // Sets default values for this component's properties
 UPistolPlayerHealthComponent::UPistolPlayerHealthComponent()
@@ -20,7 +21,21 @@ void UPistolPlayerHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	APistolEnemyPawn::OnHit.AddUObject(this, &UPistolPlayerHealthComponent::OnEnemyPawnHit);
+	if (PlayerPawn)
+	{
+		// subscribe on events
+		const AController* PC = PlayerPawn->GetController();
+		APistolPlayerState* PS = PC ? PC->GetPlayerState<APistolPlayerState>() : nullptr;
+		if (PS)
+		{
+			PS->OnEnemyHit.AddUObject(this, &UPistolPlayerHealthComponent::OnEnemyHit);
+		}
+	}
+}
+
+void UPistolPlayerHealthComponent::SetPlayerPawn(APistolPlayerPawn* InPawn)
+{
+	PlayerPawn = InPawn;
 }
 
 void UPistolPlayerHealthComponent::TakeDamage(const float Amount)
@@ -149,7 +164,7 @@ void UPistolPlayerHealthComponent::SetDamageOverlayVisibility(const float Value)
 	}
 }
 
-void UPistolPlayerHealthComponent::OnEnemyPawnHit(APistolEnemyPawn* EnemyPawn)
+void UPistolPlayerHealthComponent::OnEnemyHit(APistolEnemyPawn* EnemyPawn)
 {
 	// try to restore the shield
 	RestoreShield(1);

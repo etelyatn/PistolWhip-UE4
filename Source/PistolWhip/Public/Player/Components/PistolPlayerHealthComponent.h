@@ -126,7 +126,7 @@ public:
 	UPistolPlayerHealthComponent();
 	virtual void BeginPlay() override;
 	
-	FORCEINLINE void SetPlayerPawn(APistolPlayerPawn* InPawn) { PlayerPawn = InPawn; }
+	void SetPlayerPawn(APistolPlayerPawn* InPawn);
 	
 	/** Fired when the player is dead */
 	FOnPlayerDeathDelegate OnPlayerDeath;
@@ -206,6 +206,6 @@ protected:
 private:
 
 	/** On enemy hit handler */
-	void OnEnemyPawnHit(APistolEnemyPawn* EnemyPawn);
+	void OnEnemyHit(APistolEnemyPawn* EnemyPawn);
 
 };

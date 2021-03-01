@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "PistolWeapon.generated.h"
 
+class APistolBasePawn;
 class USoundBase;
 class APistolHandController;
 
@@ -42,7 +43,7 @@ public:
 	virtual void StartFire();
 
 	UFUNCTION(BlueprintCallable)
-	void SetOwningPawn(APawn* NewOwner);
+	void EquippedBy(APistolBasePawn* InPawn);
 	
 	/** get the muzzle location of the weapon */
 	FVector GetMuzzleLocation() const;
@@ -77,7 +78,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY()
-	APawn* OwnerPawn;
+	APawn* EquippingPawn;
 
 	/** the hand controller to which the weapon is attached */
 	UPROPERTY()

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 
 #include "MotionControllerComponent.h"
+#include "PistolBasePawn.h"
 #include "GameFramework/Actor.h"
 #include "PistolHandController.generated.h"
 
@@ -33,7 +34,7 @@ public:
 	void Fire();
 
 	UFUNCTION(BlueprintCallable)
-	void SetOwningPawn(APawn* NewOwner);
+	void SetOwningPawn(APistolBasePawn* NewOwner);
 
 	/** Play haptic feedback effect on the motion controller */
 	UFUNCTION(BlueprintCallable)
@@ -42,7 +43,7 @@ public:
 protected:
 
 	UPROPERTY()
-	APawn* OwnerPawn;
+	APistolBasePawn* OwnerPawn;
 
 private:
 

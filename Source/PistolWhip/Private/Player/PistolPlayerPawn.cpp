@@ -13,7 +13,7 @@
 #include "Gameplay/PistolSplineTrack.h"
 #include "Weapon/PistolProjectile.h"
 #include "Enemy/PistolEnemyPawn.h"
-#include "Player/Widgets/PistolPlayerInterfaceWidget.h"
+#include "UI/Widgets/PistolPlayerInterfaceWidget.h"
 
 
 const FName APistolPlayerPawn::HeadCollisionProfileName(TEXT("PlayerHead"));
@@ -60,7 +60,7 @@ APistolPlayerPawn::APistolPlayerPawn()
 	InterfaceWidgetComponent->SetGenerateOverlapEvents(false);
 	InterfaceWidgetComponent->SetRelativeLocation(FVector(150.0f, 10.0f, -50.0f));
 	InterfaceWidgetComponent->SetRelativeRotation(FRotator(180.0f, 0.0f, 0.0f));
-	InterfaceWidgetComponent->SetRelativeScale3D(FVector(0.1f));
+	InterfaceWidgetComponent->SetRelativeScale3D(FVector(0.15f));
 	InterfaceWidgetComponent->SetBlendMode(EWidgetBlendMode::Transparent);
 	InterfaceWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	InterfaceWidgetComponent->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
@@ -115,10 +115,10 @@ void APistolPlayerPawn::BeginPlay()
 	if (HealthComponentClass)
 	{
 		HealthComponent = NewObject<UPistolPlayerHealthComponent>(this, HealthComponentClass, FName("HealthComponent"));
-		HealthComponent->RegisterComponent();
 		HealthComponent->SetPlayerPawn(this);
 		HealthComponent->SetHealthData(HealthData);
 		HealthComponent->SetShieldData(ShieldData);
+		HealthComponent->RegisterComponent();
 	} else
 	{
 		UE_LOG(LogPistolWhip, Log, TEXT("APistolPlayerPawn::BeginPlay() - HealthComponentClass is not set!"))

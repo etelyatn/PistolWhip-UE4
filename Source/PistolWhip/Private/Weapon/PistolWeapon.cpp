@@ -140,7 +140,7 @@ int32 APistolWeapon::GetCurrentAmmoInClip() const
 
 FVector APistolWeapon::GetDamageStartLocation() const
 {
-	APistolPlayerController_FP* const PlayerController = OwnerPawn ? Cast<APistolPlayerController_FP>(OwnerPawn->Controller) : nullptr;
+	APistolPlayerController_FP* const PlayerController = EquippingPawn ? Cast<APistolPlayerController_FP>(EquippingPawn->Controller) : nullptr;
 	FVector OutStartTrace;
 
 	if (PlayerController)
@@ -163,7 +163,7 @@ FVector APistolWeapon::GetDamageStartLocation() const
 
 FVector APistolWeapon::GetAdjustedAim() const
 {
-	APistolPlayerController_FP* const PlayerController = OwnerPawn ? Cast<APistolPlayerController_FP>(OwnerPawn->Controller) : nullptr;
+	APistolPlayerController_FP* const PlayerController = EquippingPawn ? Cast<APistolPlayerController_FP>(EquippingPawn->Controller) : nullptr;
 	FVector FinalAim = FVector::ZeroVector;
 	
 	// If we have a FP player controller use it for the aim
@@ -247,13 +247,9 @@ void APistolWeapon::StartFire()
 	}
 }
 
-void APistolWeapon::SetOwningPawn(APawn* NewOwner)
+void APistolWeapon::EquippedBy(APistolBasePawn* InPawn)
 {
-	if (OwnerPawn != NewOwner)
-	{
-		OwnerPawn = NewOwner;
-		SetOwner(NewOwner);
-		SetInstigator(NewOwner);
-	}
+	EquippingPawn = InPawn;
+	SetInstigator(InPawn);
 }
 

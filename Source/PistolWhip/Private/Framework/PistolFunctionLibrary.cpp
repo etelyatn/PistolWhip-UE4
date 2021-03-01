@@ -10,3 +10,10 @@ float UPistolFunctionLibrary::AngleBetweenTwoVectors(const FVector VectorA, cons
 
 	return FMath::Acos(DotProduct / LengthProduct);
 }
+
+float UPistolFunctionLibrary::AngleBetweenTwoVectorsInDegrees(const FVector VectorA, const FVector VectorB)
+{
+	const float Angle = FMath::Acos(FVector::DotProduct(VectorA, VectorB));
+
+	return FMath::RadiansToDegrees(Angle);
+}

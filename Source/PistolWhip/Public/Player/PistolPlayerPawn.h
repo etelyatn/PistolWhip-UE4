@@ -13,6 +13,7 @@ class UCapsuleComponent;
 class UArrowComponent;
 class UCameraComponent;
 class UPostProcessComponent;
+class UPistolPlayerInterfaceWidget;
 
 DECLARE_MULTICAST_DELEGATE(FOnEnemyHitDelegate)
 
@@ -30,6 +31,7 @@ public:
 	FORCEINLINE UCameraComponent* GetCamera() const { return Camera; }
 	FORCEINLINE EGameModeType GetGameModeType() const { return GameModeType; }
 	FORCEINLINE UPostProcessComponent* GetPostProcessComponent() const { return PostProcessComponent; }
+	FORCEINLINE UPistolPlayerInterfaceWidget* GetInterfaceWidget() const { return InterfaceWidget; }
 
 	/** Get current head location */
 	FVector GetHeadLocation() const;

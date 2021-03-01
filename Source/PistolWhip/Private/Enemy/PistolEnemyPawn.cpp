@@ -7,9 +7,8 @@
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/CollisionProfile.h"
+#include "Kismet/GameplayStatics.h"
 #include "Weapon/PistolWeapon_Projectile.h"
-
-FOnEnemyPawnHitDelegate APistolEnemyPawn::OnHit;
 
 APistolEnemyPawn::APistolEnemyPawn()
 {
@@ -60,9 +59,7 @@ APistolEnemyPawn::APistolEnemyPawn()
 }
 
 float APistolEnemyPawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	OnHit.Broadcast(this);
-	
+{	
 	Death();
 	
 	return DamageAmount;
@@ -113,13 +110,16 @@ void APistolEnemyPawn::EquipWeapon()
 {
 	if (GetWorld() && EnemyConfig.WeaponClass && bAlive)
 	{
-		Weapon = GetWorld()->SpawnActor<APistolWeapon>(EnemyConfig.WeaponClass);
+		// spawn weapon
+		Weapon = Cast<APistolWeapon>(UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), EnemyConfig.WeaponClass, FTransform()));
 		if (Weapon)
 		{
 			Weapon->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocketName);
-			Weapon->SetOwningPawn(this);			
+			Weapon->EquippedBy(this);
 			Weapon->SetActorRelativeLocation(FVector(0.0f, 2.0f, 3.0f));
 			Weapon->SetActorRelativeRotation(FRotator(30.0f, -180.0f, 2.0f));
+
+			UGameplayStatics::FinishSpawningActor(Weapon, FTransform());
 
 			// delegate
 			if (OnWeaponEquipped.IsBound())

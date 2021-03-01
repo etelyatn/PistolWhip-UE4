@@ -2,6 +2,8 @@
 
 
 #include "Weapon/PistolWeapon_Instant.h"
+
+#include "Log.h"
 #include "Enemy/PistolEnemyPawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -45,6 +47,22 @@ void APistolWeapon_Instant::ProcessInstantHit(const FHitResult& Impact, const FV
 	if (ShouldDealDamage(Impact.GetActor()))
 	{
 		DealDamage(Impact, ShootDir);
+
+		// notify player state
+		APistolPlayerState* const PS = EquippingPawn ? Cast<APistolPlayerState>(EquippingPawn->GetPlayerState()) : nullptr;
+		APistolEnemyPawn* EnemyPawn = Cast<APistolEnemyPawn>(Impact.GetActor());
+		if (EnemyPawn && PS)
+		{
+			FEnemyHit EnemyHit;
+			EnemyHit.bBlockingHit = Impact.bBlockingHit;
+			EnemyHit.EnemyPawn = EnemyPawn;
+			EnemyHit.ImpactPoint = Impact.ImpactPoint;
+			EnemyHit.Weapon = this;
+			EnemyHit.ShootDir = ShootDir;
+			EnemyHit.ShootStart = ShootStart;
+			
+			PS->NotifyEnemyHit(EnemyHit);
+		}
 	}
 
 	// FX
@@ -67,9 +85,9 @@ void APistolWeapon_Instant::DealDamage(const FHitResult& Impact, const FVector& 
 	PointDmg.ShotDirection = ShootDir;
 	PointDmg.Damage = HitDamage;
 
-	if (IsValid(OwnerPawn) && IsValid(OwnerPawn->GetController()))
+	if (IsValid(EquippingPawn) && IsValid(EquippingPawn->GetController()))
 	{
-		Impact.GetActor()->TakeDamage(PointDmg.Damage, PointDmg, OwnerPawn->GetController(), OwnerPawn);
+		Impact.GetActor()->TakeDamage(PointDmg.Damage, PointDmg, EquippingPawn->GetController(), EquippingPawn);
 		
 		APistolEnemyPawn* EnemyPawn = Cast<APistolEnemyPawn>(Impact.GetActor());
 		if (EnemyPawn)
@@ -101,7 +119,7 @@ FHitResult APistolWeapon_Instant::AimTrace(const FVector& TraceFrom, const FVect
 	FHitResult Hit(ForceInit);
 	const EDrawDebugTrace::Type DrawDebugType = bDebug ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
 	TArray<AActor*> ActorsToIgnore;
-	ActorsToIgnore.Add(OwnerPawn);
+	ActorsToIgnore.Add(EquippingPawn);
 	
 	UKismetSystemLibrary::SphereTraceSingle(GetWorld(), TraceFrom, TraceTo, AimRadius,
 		UEngineTypes::ConvertToTraceType(COLLISION_WEAPON_TRACE), false, ActorsToIgnore, DrawDebugType, Hit, true);
