@@ -104,8 +104,9 @@ void APistolWeapon_Instant::SpawnTrailEffect(const FVector& EndPoint) const
 {
 	if (!TrailFX)
 		return;
-    
-	const FVector Origin = GetMuzzleLocation();
+
+	// add small gap to the muzzle location for trail effect
+	const FVector Origin = GetMuzzleLocation() + GetMuzzleDirection() * 30;
 
 	UParticleSystemComponent* TrailPSC = UGameplayStatics::SpawnEmitterAtLocation(this, TrailFX, Origin, FRotator::ZeroRotator, FVector(1.0f));
 	if (TrailPSC)
