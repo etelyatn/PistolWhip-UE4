@@ -81,8 +81,6 @@ void UPistolPlayerHealthComponent::SetHealthData(FPlayerHealthData& InHealthData
 {
 	HealthData = InHealthData;
 
-	CreateDamageOverlay();
-	SetDamageOverlayVisibility(0.0f);
 	HealthData.ResetHealth();
 }
 
@@ -139,28 +137,6 @@ void UPistolPlayerHealthComponent::RestoreShield(const int Hits)
 		{
 			ShieldFullyRestored();
 		}
-	}
-}
-
-void UPistolPlayerHealthComponent::CreateDamageOverlay()
-{
-	// create damage overlay
-	if (HealthData.DamageOverlayMaterial && PlayerPawn)
-	{
-		HealthData.DamageOverlayMaterialInstance = UMaterialInstanceDynamic::Create(HealthData.DamageOverlayMaterial, this); 
-		PlayerPawn->GetPostProcessComponent()->AddOrUpdateBlendable(HealthData.DamageOverlayMaterialInstance);
-	}
-}
-
-void UPistolPlayerHealthComponent::SetDamageOverlayVisibility(const float Value)
-{
-	if (HealthData.DamageOverlayMaterialInstance)
-	{
-		HealthData.DamageOverlayMaterialInstance->SetScalarParameterValue(HealthData.DamageOverlayParameter, Value);
-	}
-	else
-	{
-		UE_LOG(LogPistolWhip, Log, TEXT("UPistolPlayerHealthComponent::SetDamageOverlayVisibility - DamageOverlayMaterial is not set!"));
 	}
 }
 

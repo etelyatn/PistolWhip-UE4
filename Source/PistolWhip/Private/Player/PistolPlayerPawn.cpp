@@ -46,7 +46,6 @@ APistolPlayerPawn::APistolPlayerPawn()
 	CameraWidgetComponent->SetupAttachment(Camera);
 	CameraWidgetComponent->SetDrawAtDesiredSize(true);
 	CameraWidgetComponent->SetGenerateOverlapEvents(false);
-	CameraWidgetComponent->SetHiddenInGame(true);
 	CameraWidgetComponent->SetRelativeLocation(FVector(150.0f, 0.0f, 0.0f));
 	CameraWidgetComponent->SetRelativeRotation(FRotator(180.0f, 0.0f, 0.0f));
 	CameraWidgetComponent->SetRelativeScale3D(FVector(0.15f));
