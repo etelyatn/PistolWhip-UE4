@@ -195,14 +195,6 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category=PlayerHealth)
 	void NotifyShieldFullyRestored();
 
-	/** creates damage overlay material instance and attach to post process */
-	UFUNCTION(BlueprintCallable, Category=PlayerHealth)
-	void CreateDamageOverlay();
-
-	/** Update damage overlay material instance visibility property */
-	UFUNCTION(BlueprintCallable, Category=PlayerHealth)
-	void SetDamageOverlayVisibility(float Value);
-
 private:
 
 	/** On enemy hit handler */
