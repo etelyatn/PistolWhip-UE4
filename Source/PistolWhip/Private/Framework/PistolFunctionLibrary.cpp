@@ -17,3 +17,20 @@ float UPistolFunctionLibrary::AngleBetweenTwoVectorsInDegrees(const FVector Vect
 
 	return FMath::RadiansToDegrees(Angle);
 }
+
+void UPistolFunctionLibrary::PistolRestartLevel(UObject* WorldContextObject)
+{
+	UWorld* const World = GEngine->GetWorldFromContextObjectChecked(WorldContextObject);
+	// AMRGameMode* const GameMode = GetMRGameMode(WorldContextObject);
+	if (World)
+	{
+		FURL NewURL = GEngine->LastURLFromWorld(World);
+		//NewURL.AddOption(*FString::Printf(TEXT("Light=%s"), *GameMode->CurrentLightingScenario.ToString()));
+		
+		APlayerController* const PC = World->GetFirstPlayerController();
+		if (PC)
+		{
+			PC->ClientTravel(NewURL.ToString(), TRAVEL_Relative);
+		}
+	}
+}

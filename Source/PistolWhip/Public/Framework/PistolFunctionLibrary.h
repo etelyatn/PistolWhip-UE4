@@ -24,5 +24,8 @@ public:
 	/** calculate the angle between two vectors */
 	UFUNCTION(BlueprintCallable, Category=PistolWhip)
 	static float AngleBetweenTwoVectorsInDegrees(const FVector VectorA, const FVector VectorB);
+
+	UFUNCTION(BlueprintCallable, Category = PistolWhip, meta = (WorldContext = "WorldContextObject"))
+	static void PistolRestartLevel(UObject* WorldContextObject);
 	
 };
