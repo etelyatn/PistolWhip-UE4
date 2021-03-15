@@ -9,6 +9,7 @@
 #include "Components/PistolPlayerHealthComponent.h"
 #include "PistolPlayerPawn.generated.h"
 
+class UWidgetInteractionComponent;
 class UCapsuleComponent;
 class UArrowComponent;
 class UCameraComponent;
@@ -80,7 +81,14 @@ protected:
 //----------------------------------------------------------------------------------------------------------------------
 // Configs
 //----------------------------------------------------------------------------------------------------------------------
+public:
 
+	/** InGameMenu Actor Class */
+	UPROPERTY(Category="PistolPlayer", EditDefaultsOnly)
+	TSubclassOf<class APistolGameMenuBase> GameMenuClass;
+
+protected:
+	
 	UPROPERTY(Category="PistolPlayer", EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<class APistolWeapon> WeaponClass;
 

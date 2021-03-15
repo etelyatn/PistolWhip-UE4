@@ -9,6 +9,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/PostProcessComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Components/WidgetInteractionComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Gameplay/PistolSplineTrack.h"
 #include "Weapon/PistolProjectile.h"

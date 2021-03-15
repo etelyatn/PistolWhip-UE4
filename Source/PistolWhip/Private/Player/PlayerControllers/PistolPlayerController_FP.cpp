@@ -34,6 +34,8 @@ void APistolPlayerController_FP::OnFire()
 		{
 			Weapon->StartFire();
 		}
+
+		WidgetInteractionAction(CachedPawnFP->GetWidgetInteraction());
 	}
 }
 

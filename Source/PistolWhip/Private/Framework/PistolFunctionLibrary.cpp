@@ -21,12 +21,10 @@ float UPistolFunctionLibrary::AngleBetweenTwoVectorsInDegrees(const FVector Vect
 void UPistolFunctionLibrary::PistolRestartLevel(UObject* WorldContextObject)
 {
 	UWorld* const World = GEngine->GetWorldFromContextObjectChecked(WorldContextObject);
-	// AMRGameMode* const GameMode = GetMRGameMode(WorldContextObject);
 	if (World)
 	{
-		FURL NewURL = GEngine->LastURLFromWorld(World);
-		//NewURL.AddOption(*FString::Printf(TEXT("Light=%s"), *GameMode->CurrentLightingScenario.ToString()));
-		
+		const FURL NewURL = GEngine->LastURLFromWorld(World);
+				
 		APlayerController* const PC = World->GetFirstPlayerController();
 		if (PC)
 		{

@@ -20,10 +20,14 @@ public:
 	APistolPlayerPawn_FP();
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
-	
+
+	FORCEINLINE UWidgetInteractionComponent* GetWidgetInteraction() const { return WidgetInteraction; }
 	APistolWeapon* GetWeapon() const { return Weapon; };
 
 protected:
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+	class UWidgetInteractionComponent* WidgetInteraction;
 
 	UFUNCTION()
 	void EquipWeapon();

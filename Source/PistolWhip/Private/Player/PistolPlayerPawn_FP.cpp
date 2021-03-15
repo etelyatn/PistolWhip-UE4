@@ -4,6 +4,7 @@
 #include "Player/PistolPlayerPawn_FP.h"
 
 #include "Camera/CameraComponent.h"
+#include "Components/WidgetInteractionComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/PistolHandController.h"
 #include "Weapon/PistolWeapon.h"
@@ -12,6 +13,11 @@ APistolPlayerPawn_FP::APistolPlayerPawn_FP()
 {
 	GetCamera()->bUsePawnControlRotation = true;
 	GameModeType = EGameModeType::GMT_FP;
+
+	WidgetInteraction = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("InteractionComponent"));
+	WidgetInteraction->SetupAttachment(GetCamera());
+	WidgetInteraction->Deactivate();
+	WidgetInteraction->bShowDebug = false;
 }
 
 void APistolPlayerPawn_FP::BeginPlay()

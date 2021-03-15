@@ -10,6 +10,7 @@
 #include "PistolHandController.generated.h"
 
 class APistolWeapon;
+class UWidgetInteractionComponent;
 
 UCLASS()
 class PISTOLWHIP_API APistolHandController : public AActor
@@ -44,6 +45,17 @@ protected:
 
 	UPROPERTY()
 	APistolBasePawn* OwnerPawn;
+		
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+	UWidgetInteractionComponent* WidgetInteraction;
+
+	/** Subscribed to OnInGameMenuCreated delegate */
+	UFUNCTION()
+	void OnInGameMenuCreated();
+
+	/** Subscribed to OnInGameMenuDestroyed delegate */
+	UFUNCTION()
+	void OnInGameMenuDestroyed();
 
 private:
 
