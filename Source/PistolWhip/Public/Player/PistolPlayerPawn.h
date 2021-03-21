@@ -33,6 +33,7 @@ public:
 	FORCEINLINE EGameModeType GetGameModeType() const { return GameModeType; }
 	FORCEINLINE UPostProcessComponent* GetPostProcessComponent() const { return PostProcessComponent; }
 	FORCEINLINE UPistolPlayerInterfaceWidget* GetInterfaceWidget() const { return InterfaceWidget; }
+	FORCEINLINE UPistolPlayerHealthComponent* GetHealthComponent() const { return HealthComponent; }
 
 	/** Get current head location */
 	FVector GetHeadLocation() const;
@@ -42,6 +43,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void FinishSplineMovement() override;
 
 //----------------------------------------------------------------------------------------------------------------------
 // Components
@@ -137,6 +139,8 @@ protected:
 	/** Subscribed to OnShieldFullyRestoredDelegate */
 	void OnShieldFullyRestored() const;
 
+	/** Subscribed to OnPlayerDeath Delegate */
+	void OnPlayerDeath();
 	
 private:
 	

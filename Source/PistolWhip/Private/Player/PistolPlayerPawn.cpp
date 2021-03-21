@@ -14,7 +14,9 @@
 #include "Gameplay/PistolSplineTrack.h"
 #include "Weapon/PistolProjectile.h"
 #include "Enemy/PistolEnemyPawn.h"
+#include "Player/PlayerControllers/PistolPlayerController.h"
 #include "UI/Widgets/PistolPlayerInterfaceWidget.h"
+#include "Framework/PistolWhipGameModeBase.h"
 
 
 const FName APistolPlayerPawn::HeadCollisionProfileName(TEXT("PlayerHead"));
@@ -135,6 +137,7 @@ void APistolPlayerPawn::BeginPlay()
 	HealthComponent->OnShieldDestroyed.AddUObject(this, &APistolPlayerPawn::OnShieldDestroyed);
 	HealthComponent->OnShieldRestoreProgress.AddUObject(this, &APistolPlayerPawn::OnShieldRestoreProgress);
 	HealthComponent->OnShieldFullyRestored.AddUObject(this, &APistolPlayerPawn::OnShieldFullyRestored);
+	HealthComponent->OnPlayerDeath.AddUObject(this, &APistolPlayerPawn::OnPlayerDeath);
 }
 
 void APistolPlayerPawn::Tick(float DeltaSeconds)
@@ -151,6 +154,25 @@ void APistolPlayerPawn::Tick(float DeltaSeconds)
 void APistolPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+void APistolPlayerPawn::FinishSplineMovement()
+{
+	Super::FinishSplineMovement();
+
+	// show in game menu
+	APistolWhipGameModeBase* GM = Cast<APistolWhipGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (GM)
+	{
+		GM->ShowInGameMenu(EMenuType::EMT_Finish);
+	}
+
+	// pause the game
+	APistolPlayerController* PC = Cast<APistolPlayerController>(GetController());
+	if (PC)
+	{
+		PC->SetPause(true);
+	}
 }
 
 void APistolPlayerPawn::OnHeadOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& OverlapInfo)
@@ -194,5 +216,22 @@ void APistolPlayerPawn::OnShieldFullyRestored() const
 	if (InterfaceWidget)
 	{
 		InterfaceWidget->ShieldFullyRestored();
+	}
+}
+
+void APistolPlayerPawn::OnPlayerDeath()
+{
+	// show in game menu
+	APistolWhipGameModeBase* GM = Cast<APistolWhipGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (GM)
+	{
+		GM->ShowInGameMenu(EMenuType::EMT_Death);
+	}
+
+	// pause the game
+	APistolPlayerController* PC = Cast<APistolPlayerController>(GetController());
+	if (PC)
+	{
+			PC->SetPause(true);
 	}
 }

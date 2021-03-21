@@ -4,6 +4,7 @@
 #include "Player/PistolHandController.h"
 
 #include "Components/WidgetInteractionComponent.h"
+#include "Framework/PistolWhipGameModeBase.h"
 #include "Weapon/PistolWeapon.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
@@ -64,18 +65,19 @@ void APistolHandController::SetOwningPawn(APistolBasePawn* NewOwner)
 {
 	SetOwner(NewOwner);
 	OwnerPawn = NewOwner;
-
-	APistolPlayerController* PC = Cast<APistolPlayerController>(OwnerPawn->GetController());
-	if (PC)
-	{
-		PC->OnInGameMenuCreated.AddUObject(this, &APistolHandController::OnInGameMenuCreated);
-		PC->OnInGameMenuDestroyed.AddUObject(this, &APistolHandController::OnInGameMenuDestroyed);
-	}
 }
 
 void APistolHandController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// subscribe on Game mode delegates
+	APistolWhipGameModeBase* GM = Cast<APistolWhipGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (GM)
+	{
+		GM->OnInGameMenuCreated.AddUObject(this, &APistolHandController::OnInGameMenuCreated);
+		GM->OnInGameMenuDestroyed.AddUObject(this, &APistolHandController::OnInGameMenuDestroyed);
+	}
 }
 
 void APistolHandController::PlayHapticFeedback(UHapticFeedbackEffect_Base* HapticFeedback, const float Scale) const

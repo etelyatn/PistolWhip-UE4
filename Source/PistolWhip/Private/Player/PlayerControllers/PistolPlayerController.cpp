@@ -6,7 +6,8 @@
 #include "Components/WidgetInteractionComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/PistolPlayerPawn.h"
-#include "UI/PistolGameMenuBase.h"
+#include "PistolWhipTypes.h"
+#include "Framework/PistolWhipGameModeBase.h"
 
 void APistolPlayerController::SetPawn(APawn* InPawn)
 {
@@ -52,7 +53,11 @@ void APistolPlayerController::PauseGame()
 	// show the pause menu widget
 	if (CachedPawn.IsValid())
 	{
-		CreateInGameMenu(EGameMenuType::Pause);
+		APistolWhipGameModeBase* GM = Cast<APistolWhipGameModeBase>(UGameplayStatics::GetGameMode(this));
+		if (GM)
+		{
+			GM->ShowInGameMenu(EMenuType::EMT_Pause);
+		}
 	}
 
 	// give some time for displaying the widget and pause the game
@@ -62,7 +67,11 @@ void APistolPlayerController::PauseGame()
 
 void APistolPlayerController::UnPauseGame()
 {
-	DestroyInGameMenu();
+	APistolWhipGameModeBase* GM = Cast<APistolWhipGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (GM)
+	{
+		GM->HideInGameMenu();
+	}
 
 	SetPause(false);
 }
@@ -70,33 +79,4 @@ void APistolPlayerController::UnPauseGame()
 void APistolPlayerController::SetGamePaused()
 {
 	SetPause(true);
-}
-
-void APistolPlayerController::CreateInGameMenu(const EGameMenuType MenuType)
-{
-	if (CachedPawn->GameMenuClass)
-	{
-		const FVector WidgetLocation = CachedPawn->GetActorLocation() + FVector(300.0f, 0.0f, 0.0f);
-		const FTransform WidgetTransform(FRotator(0.0f, 180.0f, 0.0f),WidgetLocation, FVector::OneVector);
-		
-		InGameMenu = Cast<APistolGameMenuBase>(UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), CachedPawn->GameMenuClass, WidgetTransform));
-        if (InGameMenu)
-        {
-        	InGameMenu->SetMenuType(MenuType);
-
-        	UGameplayStatics::FinishSpawningActor(InGameMenu, WidgetTransform);
-
-        	OnInGameMenuCreated.Broadcast();
-        }
-	}
-}
-
-void APistolPlayerController::DestroyInGameMenu()
-{
-	if (InGameMenu)
-	{
-		InGameMenu->Destroy();
-
-		OnInGameMenuDestroyed.Broadcast();
-	}
 }

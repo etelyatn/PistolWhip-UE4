@@ -9,9 +9,6 @@
 #include "UI/PistolGameMenuBase.h"
 #include "PistolPlayerController.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnInGameMenuCreated)
-DECLARE_MULTICAST_DELEGATE(FOnInGameMenuDestroyed)
-
 /**
  * 
  */
@@ -23,9 +20,6 @@ public:
 	virtual void SetPawn(APawn* InPawn) override;
 
 	virtual void SetupInputComponent() override;
-
-	FOnInGameMenuCreated OnInGameMenuCreated;
-	FOnInGameMenuDestroyed OnInGameMenuDestroyed;
 
 	/** do widget interaction action */
 	virtual void WidgetInteractionAction(UWidgetInteractionComponent* WidgetInteraction);
@@ -44,15 +38,6 @@ protected:
 	/** exactly pauses the game */
 	void SetGamePaused();
 
-	/** create InGameMenu actor */
-	void CreateInGameMenu(EGameMenuType MenuType);
-
-	/** destroy InGameMenu actor */
-	void DestroyInGameMenu();
-
 private:
 	TWeakObjectPtr<class APistolPlayerPawn> CachedPawn;	
-
-	UPROPERTY()
-	class APistolGameMenuBase* InGameMenu;	
 };

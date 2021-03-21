@@ -4,14 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "PistolWhipTypes.h"
 #include "PistolGameMenuBase.generated.h"
-
-UENUM(BlueprintType)
-enum class EGameMenuType : uint8
-{
-	Pause,
-	Death
-};
 
 UCLASS()
 class PISTOLWHIP_API APistolGameMenuBase : public AActor
@@ -20,14 +14,14 @@ class PISTOLWHIP_API APistolGameMenuBase : public AActor
 	
 public:
 
-	FORCEINLINE void SetMenuType(const EGameMenuType InMenuType) { MenuType = InMenuType; }
+	FORCEINLINE void SetMenuType(const EMenuType InMenuType) { MenuType = InMenuType; }
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE EGameMenuType GetMenuType() const { return MenuType; }
+	FORCEINLINE EMenuType GetMenuType() const { return MenuType; }
 
 private:
 
 	/** Menu type affects on widget behavior (text, buttons, etc.) */
-	EGameMenuType MenuType;
+	EMenuType MenuType;
 
 };

@@ -15,3 +15,12 @@ enum class EGameModeType : uint8
 
     GMT_Invalid
 };
+
+/** List of game menu types */
+UENUM(BlueprintType)
+enum class EMenuType : uint8
+{
+	EMT_Pause UMETA(DisplayName = "Pause"),
+	EMT_Death UMETA(DisplayName = "Death"),
+	EMT_Finish  UMETA(DisplayName = "Fihish")
+};
