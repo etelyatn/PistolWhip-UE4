@@ -1,8 +1,6 @@
 // 2021 github.com/EugeneTel/PistolWhip-UE4
 
 #include "Player/PlayerControllers/PistolPlayerController.h"
-
-#include "Log.h"
 #include "Components/WidgetInteractionComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/PistolPlayerPawn.h"

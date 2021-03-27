@@ -2,9 +2,6 @@
 
 
 #include "Player/PistolBasePawn.h"
-
-
-#include "Log.h"
 #include "Gameplay/PistolSplineTrack.h"
 #include "Kismet/GameplayStatics.h"
 

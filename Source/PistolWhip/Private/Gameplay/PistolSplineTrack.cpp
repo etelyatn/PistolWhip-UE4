@@ -4,7 +4,6 @@
 #include "Gameplay/PistolSplineTrack.h"
 #include "Components/SplineComponent.h"
 #include "Gameplay/PistolTrackPointComponent.h"
-#include "Log.h"
 
 APistolSplineTrack::APistolSplineTrack()
 {

@@ -1,8 +1,6 @@
 // 2021 github.com/EugeneTel/PistolWhip-UE4
 
 #include "Player/PistolPlayerPawn.h"
-
-#include "Log.h"
 #include "PistolWhip.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"

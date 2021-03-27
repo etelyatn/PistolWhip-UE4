@@ -2,8 +2,6 @@
 
 
 #include "Weapon/PistolWeapon_Instant.h"
-
-#include "Log.h"
 #include "Enemy/PistolEnemyPawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"

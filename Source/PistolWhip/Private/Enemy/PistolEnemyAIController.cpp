@@ -1,8 +1,6 @@
 // 2021 github.com/EugeneTel/PistolWhip-UE4
 
 #include "Enemy/PistolEnemyAIController.h"
-
-#include "Log.h"
 #include "Enemy/PistolEnemyPawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"

@@ -2,8 +2,6 @@
 
 
 #include "Weapon/PistolWeapon_Projectile.h"
-
-#include "Log.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Weapon/PistolProjectile.h"

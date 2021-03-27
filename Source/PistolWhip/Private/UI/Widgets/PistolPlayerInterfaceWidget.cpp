@@ -2,8 +2,6 @@
 
 
 #include "UI/Widgets/PistolPlayerInterfaceWidget.h"
-
-#include "Log.h"
 #include "Components/TextBlock.h"
 
 void UPistolPlayerInterfaceWidget::NativeConstruct()

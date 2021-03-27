@@ -3,7 +3,6 @@
 
 #include "Weapon/PistolProjectile.h"
 
-#include "Log.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"

@@ -2,8 +2,6 @@
 
 
 #include "Enemy/PistolEnemyPawn.h"
-
-#include "Log.h"
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/CollisionProfile.h"

@@ -2,8 +2,6 @@
 
 
 #include "Player/PistolPlayerState.h"
-
-#include "Log.h"
 #include "Enemy/PistolEnemyPawn.h"
 #include "Framework/PistolFunctionLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -49,8 +47,6 @@ void APistolPlayerState::CalculateEnemyDamageScore(FEnemyHit& EnemyHit)
 		const float ScorePercent = UKismetMathLibrary::NormalizeToRange(Angle,0.0f, Weapon->GetAimRadius() / 10.0f);
 		DamageScore = FMath::Max(ScoreRange.X, FMath::RoundToInt(DamageScore - DamageScore * ScorePercent));
 	}
-
-	ULog::Number(DamageScore, "OnScoreAdded: ");
 
 	TotalScore += DamageScore;
 

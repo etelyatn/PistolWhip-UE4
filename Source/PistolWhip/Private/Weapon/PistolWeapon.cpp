@@ -5,7 +5,6 @@
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
 #include "DrawDebugHelpers.h"
-#include "Log.h"
 #include "PistolWhipTypes.h"
 #include "Framework/PistolFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"

@@ -2,8 +2,6 @@
 
 
 #include "Player/Components/PistolPlayerHealthComponent.h"
-
-#include "Log.h"
 #include "PistolWhip.h"
 #include "Components/PostProcessComponent.h"
 #include "Enemy/PistolEnemyPawn.h"
